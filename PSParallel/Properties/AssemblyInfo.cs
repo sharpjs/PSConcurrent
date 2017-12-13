@@ -23,8 +23,8 @@ using System.Security;
 
 // Security
 //
-// All code is transparent.
-// The entire assembly will not do anything privileged or unsafe.
+// All types and members are security-critical, except where
+// being security-critical violates an inheritance rule.
 // http://msdn.microsoft.com/en-us/library/dd233102.aspx
 //
-[assembly: SecurityTransparent]
+// (default behavior; no security attribute)
