@@ -33,11 +33,13 @@ namespace PSParallel
         private readonly CancellationTokenSource
             _cancellation = new CancellationTokenSource();
 
-        private SemaphoreSlim         _semaphore;
-        private ConcurrentQueue<Task> _workers;
-        private int                   _workerCount;
-        private ConsoleState          _console;
-        private int                   _isDisposed;
+        private SemaphoreSlim                    _semaphore;
+        private ConcurrentQueue<Task>            _workers;
+        private int                              _workerCount;
+        private MainThreadSynchronizationContext _context;
+        private ConsoleState                     _console;
+        private int                              _isDisposed;
+
 
         private PSHost Host
             => CommandRuntime.Host;
@@ -87,7 +89,7 @@ namespace PSParallel
             );
 
             _workers = new ConcurrentQueue<Task>();
-
+            _context = new MainThreadSynchronizationContext();
             _console = new ConsoleState();
         }
 
@@ -111,12 +113,15 @@ namespace PSParallel
 
         protected override void EndProcessing()
         {
-            Task.WaitAll(_workers.ToArray());
-            // TODO: Wait for some sort of output event and forward output to
-            // the consumer.  Output must be made from within this method and
-            // on this thread.
+            var task = Task
+                .WhenAll(_workers)
+                .ContinueWith(_ => _context.Complete());
 
+            _context.RunMainThread();
             _workers = null; // disposal unnecessary
+
+            // Surface exception(s) from the tasks
+            task.GetAwaiter().GetResult();
         }
 
         protected override void StopProcessing()
@@ -132,10 +137,12 @@ namespace PSParallel
         private void WorkerMain(ScriptBlock script, int workerId)
         {
             var host = new WorkerHost(Host, _console, workerId);
+            var oldContext = SynchronizationContext.Current;
 
             try
             {
                 host.UI.WriteLine("Starting");
+                SynchronizationContext.SetSynchronizationContext(_context);
 
                 var state = CreateInitialSessionState();
 
@@ -165,20 +172,18 @@ namespace PSParallel
             finally
             {
                 host.UI.WriteLine("Ended");
+                SynchronizationContext.SetSynchronizationContext(oldContext);
                 _semaphore.Release();
             }
         }
 
         private void OnOutput(int workerId, object obj)
         {
-            //var output = new WorkerOutput
-            //{
-            //    WorkerId = workerId,
-            //    Object   = obj
-            //};
-
-            //lock (_console)
-            //    WriteObject(output);
+            _context.Post(WriteObject, new WorkerOutput
+            {
+                WorkerId = workerId,
+                Object   = obj
+            });
         }
 
         private InitialSessionState CreateInitialSessionState()
