@@ -135,33 +135,24 @@ namespace PSParallel
 
         private void WorkerMain(ScriptBlock script, int workerId)
         {
-            var host = new WorkerHost(Host, _console, workerId);
-            var oldContext = SynchronizationContext.Current;
+            try
+            {
+                using (new SynchronizationScope(_context))
+                    RunScript(script, workerId);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
 
+        private void RunScript(ScriptBlock script, int workerId)
+        {
+            var host = new WorkerHost(Host, _console, workerId);
             try
             {
                 host.UI.WriteLine("Starting");
-                SynchronizationContext.SetSynchronizationContext(_context);
-
-                var state = CreateInitialSessionState();
-
-                using (var runspace = RunspaceFactory.CreateRunspace(host, state))
-                {
-                    runspace.Name          = $"Invoke-Parallel-{workerId}";
-                    runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
-                    runspace.Open();
-
-                    using (var shell = PowerShell.Create())
-                    {
-                        var output = new PSDataCollection<PSObject>();
-                        output.DataAdding += (s, e) => OnOutput(workerId, e.ItemAdded);
-
-                        shell.Runspace = runspace;
-                        shell.AddScript(script.ToString()).Invoke(null, output);
-                    }
-
-                    runspace.Close();
-                }
+                RunScript(script, workerId, host);
             }
             catch (Exception e)
             {
@@ -171,8 +162,29 @@ namespace PSParallel
             finally
             {
                 host.UI.WriteLine("Ended");
-                SynchronizationContext.SetSynchronizationContext(oldContext);
-                _semaphore.Release();
+            }
+        }
+
+        private void RunScript(ScriptBlock script, int workerId, WorkerHost host)
+        {
+            var state = CreateInitialSessionState(workerId);
+
+            using (var runspace = RunspaceFactory.CreateRunspace(host, state))
+            {
+                runspace.Name          = $"Invoke-Parallel-{workerId}";
+                runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
+                runspace.Open();
+
+                using (var shell = PowerShell.Create())
+                {
+                    var output = new PSDataCollection<PSObject>();
+                    output.DataAdding += (s, e) => OnOutput(workerId, e.ItemAdded);
+
+                    shell.Runspace = runspace;
+                    shell.AddScript(script.ToString()).Invoke(null, output);
+                }
+
+                runspace.Close();
             }
         }
 
