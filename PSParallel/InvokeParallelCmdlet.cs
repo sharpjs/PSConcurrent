@@ -185,7 +185,7 @@ namespace PSParallel
             });
         }
 
-        private InitialSessionState CreateInitialSessionState()
+        private InitialSessionState CreateInitialSessionState(int workerId)
         {
             var state = InitialSessionState.CreateDefault();
 
@@ -205,6 +205,10 @@ namespace PSParallel
 
             state.Variables.Add(new SessionStateVariableEntry(
                 "CancellationToken", _cancellation.Token, null
+            ));
+
+            state.Variables.Add(new SessionStateVariableEntry(
+                "WorkerId", workerId, null
             ));
 
             state.Variables.Add(new SessionStateVariableEntry(
