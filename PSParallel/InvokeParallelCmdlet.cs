@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Management.Automation.Runspaces;
@@ -36,6 +37,7 @@ namespace PSParallel
         private int                              _workerCount;
         private MainThreadSynchronizationContext _context;
         private ConsoleState                     _console;
+        private ConcurrentBag<Exception>         _exceptions;
         private int                              _isDisposed;
 
         private PSHost Host
@@ -85,9 +87,10 @@ namespace PSParallel
                 maxCount:     concurrency
             );
 
-            _workers = new ConcurrentQueue<Task>();
-            _context = new MainThreadSynchronizationContext();
-            _console = new ConsoleState();
+            _workers    = new ConcurrentQueue<Task>();
+            _context    = new MainThreadSynchronizationContext();
+            _console    = new ConsoleState();
+            _exceptions = new ConcurrentBag<Exception>();
         }
 
         protected override void ProcessRecord()
@@ -227,6 +230,38 @@ namespace PSParallel
 
             return state;
         }
+
+        private void HandleException(Exception e, int workerId, WorkerHost host = null)
+        {
+            if (e is AggregateException aggregate)
+            {
+                foreach (var inner in aggregate.InnerExceptions)
+                    HandleException(e, workerId, host);
+            }
+            else if (e.InnerException is Exception inner)
+            {
+                HandleException(inner, workerId, host);
+            }
+            else
+            {
+                if (host != null)
+                    host.UI.WriteErrorLine(GetMostHelpfulMessage(e));
+
+                e.Data["WorkerId"] = workerId;
+                _exceptions.Add(e);
+            }
+        }
+
+        private void ThrowCollectedExceptions()
+        {
+            if (_exceptions.Any())
+                throw new AggregateException(_exceptions);
+        }
+
+        private static string GetMostHelpfulMessage(Exception e)
+            => (e as RuntimeException).ErrorRecord?.ErrorDetails?.Message
+            ?? (e as RuntimeException).ErrorRecord?.Exception   ?.Message
+            ?? e.Message;
 
         /// <summary>
         ///   Disposes unmanaged resources owned by the object.
