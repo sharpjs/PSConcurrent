@@ -16,22 +16,22 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PSParallel
 {
-    internal class GeneralSynchronizationContext : SynchronizationContext
+    internal class MainThreadSynchronizationContext : SynchronizationContext
     {
         private readonly BlockingCollection<Thunk>
             _queue = new BlockingCollection<Thunk>();
 
         // Special pseudo ThreadIds
-        private const int
-            Initial =  0,   // Initial state; Run() not yet called
-            Ended   = -1;   // Run() ended
+        private const int NoThread = 0;
 
         private int _mainThreadId;
+        private int _operationCount;
 
         /// <summary>
         ///   Gets whether the current thread is the main thread of this
@@ -60,7 +60,8 @@ namespace PSParallel
 
             if (IsInMainThread)
             {
-                action(state);
+                //action(state);
+                throw new NotSupportedException("Reentrancy is not supported.");
             }
             else
             {
@@ -83,80 +84,106 @@ namespace PSParallel
             _queue.Add(new Thunk(action, state));
         }
 
-        public void Run(CancellationToken cancellationToken)
-        {
-            EnterRunningState();
+        /// <summary>
+        ///   Runs the main-thread loop, invoking delegates sent with
+        ///   <see cref="Send(SendOrPostCallback, object)"/> or
+        ///   <see cref="Post(SendOrPostCallback, object)"/> on this thread
+        ///   until <see cref="Complete"/> is called.
+        /// </summary>
+        public void RunMainThread()
+            => RunMainThread(Timeout.InfiniteTimeSpan);
 
-            try
-            {
-                while (_queue.TryTake(out var thunk, Timeout.Infinite, cancellationToken))
-                    thunk.Invoke();
-            }
-            finally
-            {
-                _mainThreadId = Ended;
-            }
+        /// <summary>
+        ///   Runs the main-thread loop, invoking delegates sent with
+        ///   <see cref="Send(SendOrPostCallback, object)"/> or
+        ///   <see cref="Post(SendOrPostCallback, object)"/> on this thread
+        ///   until either <see cref="Complete"/> is called or
+        ///   <paramref name="wait"/> time elapses with no delegate to invoke.
+        /// </summary>
+        /// <param name="wait">The maximum amount of time to wait for a delegate to execute.</param>
+        public void RunMainThread(TimeSpan wait)
+        {
+            SetMainThread();
+
+            while (_queue.TryTake(out var thunk, wait))
+                thunk.Invoke();
+        }
+
+        public override void OperationStarted()
+        {
+            Interlocked.Increment(ref _operationCount);
+        }
+
+        public override void OperationCompleted()
+        {
+            if (Interlocked.Decrement(ref _operationCount) <= 0)
+                Complete();
+        }
+
+        public void Complete()
+        {
+            _mainThreadId = NoThread;
+            _queue.CompleteAdding();
         }
 
         public static T Run<T>(Func<Task<T>> action)
         {
-            var previousContext = Current;
-            try
-            {
-                var context = new GeneralSynchronizationContext();
-                SetSynchronizationContext(context);
+            var context = new MainThreadSynchronizationContext();
 
+            using (new SynchronizationScope(context))
+            {
                 var task = action();
-
-                var cancellation = new CancellationTokenSource();
-                task.ContinueWith(_ => cancellation.Cancel());
-
-                context.Run(cancellation.Token);
-
+                task.ContinueWith(_ => context.Complete());
+                context.RunMainThread();
                 return task.Result;
-            }
-            finally
-            {
-                SetSynchronizationContext(previousContext);
             }
         }
 
-        private void EnterRunningState()
+        public static void Run(Action action)
         {
-            var previous = Interlocked.CompareExchange(
-                ref _mainThreadId,
-                Thread.CurrentThread.ManagedThreadId,
-                comparand: Initial
-            );
+            var context = new MainThreadSynchronizationContext();
 
-            if (previous == Initial)
+            using (new SynchronizationScope(context))
+            {
+                context.OperationStarted();
+                action();
+                context.OperationCompleted();
+                context.RunMainThread();
+            }
+        }
+
+        private void SetMainThread()
+        {
+            var current  = Thread.CurrentThread.ManagedThreadId;
+            var previous = Interlocked.CompareExchange(
+                ref _mainThreadId, current, comparand: NoThread);
+
+            if (previous == NoThread || previous == current)
+                // This thread either just became the main thread, or it already
+                // was the main thread (in case of reentrancy).
                 return;
 
             throw new InvalidOperationException(
-                "The synchronization context is already running."
+                "Another thread is already the main thread of this event loop.  " +
+                "Run should be called from the main thread only."
             );
         }
 
-        private void EnterEndedState()
+        private void RequireNotEnded()
         {
-            _mainThreadId = Ended;
+            if (!_queue.IsAddingCompleted)
+                return;
+
+            throw new InvalidAsynchronousStateException(
+                "Failed to invoke a method on the main thread, " +
+                "because the destination event loop has exited."
+            );
         }
 
         private static void RequireAction(SendOrPostCallback action)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
-        }
-
-        private void RequireNotEnded()
-        {
-            if (_mainThreadId != Ended)
-                return;
-
-            throw new InvalidOperationException(
-                "The synchronization context has ended.  " +
-                "Cannot post further messages to its event loop."
-            );
         }
 
         private class Thunk
