@@ -264,8 +264,8 @@ namespace PSParallel
         }
 
         private static string GetMostHelpfulMessage(Exception e)
-            => (e as RuntimeException).ErrorRecord?.ErrorDetails?.Message
-            ?? (e as RuntimeException).ErrorRecord?.Exception   ?.Message
+            => (e as RuntimeException)?.ErrorRecord?.ErrorDetails?.Message
+            ?? (e as RuntimeException)?.ErrorRecord?.Exception   ?.Message
             ?? e.Message;
 
         /// <summary>
