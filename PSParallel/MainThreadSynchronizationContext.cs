@@ -165,7 +165,7 @@ namespace PSParallel
                 var task = action();
                 task.ContinueWith(_ => context.Complete());
                 context.RunMainThread();
-                return task.Result;
+                return task.GetAwaiter().GetResult();
             }
         }
 
