@@ -104,10 +104,16 @@ namespace PSParallel
 
                 var workerId = ++_workerCount;
 
-                _workers.Enqueue(Task.Run(
-                    () => WorkerMain(script, workerId),
-                    _cancellation.Token
-                ));
+                _workers.Enqueue(Task
+                    .Run(
+                        () => WorkerMain(script, workerId),
+                        _cancellation.Token
+                    )
+                    .ContinueWith(
+                        task => HandleException(task.Exception, workerId),
+                        TaskContinuationOptions.OnlyOnFaulted
+                    )
+                );
             }
         }
 
@@ -120,8 +126,7 @@ namespace PSParallel
             _context.RunMainThread();
             _workers = null; // disposal unnecessary
 
-            // Surface exception(s) from the tasks
-            task.GetAwaiter().GetResult();
+            ThrowCollectedExceptions();
         }
 
         protected override void StopProcessing()
@@ -157,8 +162,8 @@ namespace PSParallel
             }
             catch (Exception e)
             {
-                host.UI.WriteErrorLine(e.Message);
-                throw;
+                HandleException(e, workerId, host);
+                _cancellation.Cancel();
             }
             finally
             {
