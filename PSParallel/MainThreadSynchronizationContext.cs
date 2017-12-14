@@ -66,9 +66,11 @@ namespace PSParallel
             }
             else
             {
-                var done = new ManualResetEventSlim();
-                _queue.Add(new Thunk(action, state, done));
-                done.Wait();
+                using (var done = new ManualResetEventSlim())
+                {
+                    _queue.Add(new Thunk(action, state, done));
+                    done.Wait();
+                }
             }
         }
 
