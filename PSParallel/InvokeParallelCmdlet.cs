@@ -176,7 +176,7 @@ namespace PSParallel
                 using (var shell = PowerShell.Create())
                 {
                     var output = new PSDataCollection<PSObject>();
-                    output.DataAdding += (s, e) => OnOutput(workerId, e.ItemAdded);
+                    output.DataAdding += (s, e) => HandleOutput(workerId, e.ItemAdded);
 
                     shell.Runspace = runspace;
                     shell.AddScript(script.ToString()).Invoke(null, output);
@@ -186,7 +186,7 @@ namespace PSParallel
             }
         }
 
-        private void OnOutput(int workerId, object obj)
+        private void HandleOutput(int workerId, object obj)
         {
             _context.Send(WriteObject, new WorkerOutput
             {
