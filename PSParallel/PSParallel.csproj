@@ -64,6 +64,7 @@
     <Compile Include="GeneralSynchronizationContext.cs" />
     <Compile Include="InvokeParallelCmdlet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynchronizationScope.cs" />
     <Compile Include="WorkerHost.cs" />
     <Compile Include="WorkerHostUI.cs" />
     <Compile Include="ConsoleState.cs" />
