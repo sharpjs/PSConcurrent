@@ -178,7 +178,7 @@ namespace PSParallel
 
         private void OnOutput(int workerId, object obj)
         {
-            _context.Post(WriteObject, new WorkerOutput
+            _context.Send(WriteObject, new WorkerOutput
             {
                 WorkerId = workerId,
                 Object   = obj
