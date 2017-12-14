@@ -24,14 +24,15 @@ namespace PSParallel
 {
     internal class MainThreadSynchronizationContext : SynchronizationContext
     {
+        // Indicates no main thread yet
+        private const int NoThread = 0;
+
+        // Queue of delegates waiting to be executed on the main thread
         private readonly BlockingCollection<Thunk>
             _queue = new BlockingCollection<Thunk>();
 
-        // Special pseudo ThreadIds
-        private const int NoThread = 0;
-
-        private int _mainThreadId;
-        private int _operationCount;
+        private int _mainThreadId;      // ThreadId of main thread
+        private int _operationCount;    // Count of async void methods running
 
         /// <summary>
         ///   Gets whether the current thread is the main thread of this
@@ -109,17 +110,40 @@ namespace PSParallel
                 thunk.Invoke();
         }
 
+        /// <summary>
+        ///   Informs the synchronization context that an asynchronous operation
+        ///   (usually an <c>async void</c> method invocation) has started.
+        /// </summary>
+        /// <remarks>
+        ///   This method is thread-safe.
+        /// </remarks>
         public override void OperationStarted()
         {
             Interlocked.Increment(ref _operationCount);
         }
 
+        /// <summary>
+        ///   Informs the synchronization context that an asynchronous operation
+        ///   (usually an <c>async void</c> method invocation) has completed.
+        ///   If no asynchronous operations remain in progress, the context
+        ///   completes and <see cref="RunMainThread"/> returns.
+        /// </summary>
+        /// <remarks>
+        ///   This method is thread-safe.
+        /// </remarks>
         public override void OperationCompleted()
         {
             if (Interlocked.Decrement(ref _operationCount) <= 0)
                 Complete();
         }
 
+        /// <summary>
+        ///   Causes the synchronization context to complete.
+        ///   <see cref="RunMainThread"/> will return.
+        /// </summary>
+        /// <remarks>
+        ///   This method is thread-safe.
+        /// </remarks>
         public void Complete()
         {
             _mainThreadId = NoThread;
