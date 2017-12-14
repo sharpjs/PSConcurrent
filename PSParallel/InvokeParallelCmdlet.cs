@@ -40,7 +40,6 @@ namespace PSParallel
         private ConsoleState                     _console;
         private int                              _isDisposed;
 
-
         private PSHost Host
             => CommandRuntime.Host;
 
