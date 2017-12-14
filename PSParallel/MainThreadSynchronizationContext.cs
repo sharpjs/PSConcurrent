@@ -134,7 +134,7 @@ namespace PSParallel
         public override void OperationCompleted()
         {
             if (Interlocked.Decrement(ref _operationCount) <= 0)
-                Complete();
+                CompleteCore();
         }
 
         /// <summary>
@@ -145,6 +145,12 @@ namespace PSParallel
         ///   This method is thread-safe.
         /// </remarks>
         public void Complete()
+        {
+            if (_operationCount <= 0)
+                CompleteCore();
+        }
+
+        private void CompleteCore()
         {
             _mainThreadId = NoThread;
             _queue.CompleteAdding();
