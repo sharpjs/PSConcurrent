@@ -14,12 +14,11 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-namespace PSParallel
+namespace PSConcurrent
 {
-    public class WorkerOutput
+    internal class ConsoleState
     {
-        public int WorkerId { get; set; }
-
-        public object Object { get; set; }
+        internal bool IsAtBol = true;
+        internal int  LastWorkerId;
     }
 }

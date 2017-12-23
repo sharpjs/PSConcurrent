@@ -17,8 +17,8 @@
 using System.Reflection;
 
 // General Information
-[assembly: AssemblyTitle       ("PSParallel.Tests")]
-[assembly: AssemblyDescription ("Tests for PowerShell Invoke-Parallel Cmdlet")]
+[assembly: AssemblyTitle       ("PSConcurrent.Tests")]
+[assembly: AssemblyDescription ("Tests for PowerShell Invoke-Concurrent Cmdlet")]
 
 // Security
 //

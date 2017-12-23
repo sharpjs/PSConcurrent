@@ -19,7 +19,7 @@ using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 
-namespace PSParallel
+namespace PSConcurrent
 {
     internal class WorkerHost : PSHost
     {
@@ -36,7 +36,7 @@ namespace PSParallel
             _host = host ?? throw new ArgumentNullException(nameof(host));
             _ui   = new WorkerHostUI(host.UI, state, workerId);
             _id   = Guid.NewGuid();
-            _name = $"Invoke-Parallel[{workerId}]";
+            _name = $"Invoke-Concurrent[{workerId}]";
         }
 
         public override Guid InstanceId

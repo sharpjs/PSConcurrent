@@ -23,11 +23,11 @@ using System.Management.Automation.Runspaces;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PSParallel
+namespace PSConcurrent
 {
-    [Cmdlet(VerbsLifecycle.Invoke, "Parallel")]
+    [Cmdlet(VerbsLifecycle.Invoke, "Concurrent")]
     [OutputType(typeof(WorkerOutput))]
-    public class InvokeParallelCmdlet : Cmdlet
+    public class InvokeConcurrentCmdlet : Cmdlet
     {
         private readonly CancellationTokenSource
             _cancellation = new CancellationTokenSource();
@@ -52,7 +52,7 @@ namespace PSParallel
             ValueFromPipeline               = true,
             ValueFromPipelineByPropertyName = true,
             HelpMessage
-                = "The script block(s) to run in parallel."
+                = "The script block(s) to run concurrently."
         )]
         public ScriptBlock[] ScriptBlock { get; set; }
 
@@ -177,7 +177,7 @@ namespace PSParallel
 
             using (var runspace = RunspaceFactory.CreateRunspace(host, state))
             {
-                runspace.Name          = $"Invoke-Parallel-{workerId}";
+                runspace.Name          = $"Invoke-Concurrent-{workerId}";
                 runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
                 runspace.Open();
 
@@ -271,7 +271,7 @@ namespace PSParallel
         /// <summary>
         ///   Disposes unmanaged resources owned by the object.
         /// </summary>
-        ~InvokeParallelCmdlet()
+        ~InvokeConcurrentCmdlet()
         {
             Dispose(managed: false);
         }

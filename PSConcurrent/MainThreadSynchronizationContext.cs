@@ -20,7 +20,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PSParallel
+namespace PSConcurrent
 {
     internal class MainThreadSynchronizationContext : SynchronizationContext
     {

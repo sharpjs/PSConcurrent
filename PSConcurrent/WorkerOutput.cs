@@ -14,26 +14,12 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-using System.Management.Automation;
-using NUnit.Framework;
-
-namespace PSParallel.Tests
+namespace PSConcurrent
 {
-    [TestFixture]
-    public class InvokeParallelCmdletTests
+    public class WorkerOutput
     {
-        [Test]
-        public void TestIt()
-        {
-            using (var shell = PowerShell.Create())
-            {
-                shell.AddScript(@"
-                    Import-Module PSParallel.dll
-                    Invoke-Parallel { 42 }, { 42 }
-                ");
+        public int WorkerId { get; set; }
 
-                shell.Invoke();
-            }
-        }
+        public object Object { get; set; }
     }
 }

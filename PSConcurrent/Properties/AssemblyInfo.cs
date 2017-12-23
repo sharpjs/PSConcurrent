@@ -14,25 +14,17 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-using System;
-using System.Threading;
-using static System.Threading.SynchronizationContext;
+using System.Reflection;
+using System.Security;
 
-namespace PSParallel
-{
-    internal class SynchronizationScope : IDisposable
-    {
-        private readonly SynchronizationContext _previousContext;
+// General Information
+[assembly: AssemblyTitle       ("PSConcurrent")]
+[assembly: AssemblyDescription ("PowerShell Invoke-Concurrent Cmdlet")]
 
-        public SynchronizationScope(SynchronizationContext context)
-        {
-            _previousContext = Current;
-            SetSynchronizationContext(context);
-        }
-
-        public void Dispose()
-        {
-            SetSynchronizationContext(_previousContext);
-        }
-    }
-}
+// Security
+//
+// All types and members are security-critical, except where
+// being security-critical violates an inheritance rule.
+// http://msdn.microsoft.com/en-us/library/dd233102.aspx
+//
+// (default behavior; no security attribute)

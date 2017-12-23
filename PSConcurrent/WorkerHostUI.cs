@@ -21,7 +21,7 @@ using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Security;
 
-namespace PSParallel
+namespace PSConcurrent
 {
     internal class WorkerHostUI : PSHostUserInterface
     {

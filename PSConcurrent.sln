@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSParallel", "PSParallel\PSParallel.csproj", "{2B5C5AC5-A744-4C7D-B818-9B4F55F9E04E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSConcurrent", "PSConcurrent\PSConcurrent.csproj", "{2B5C5AC5-A744-4C7D-B818-9B4F55F9E04E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSParallel.Tests", "PSParallel.Tests\PSParallel.Tests.csproj", "{39CD69D2-363F-4B98-9226-464E871E64E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSConcurrent.Tests", "PSConcurrent.Tests\PSConcurrent.Tests.csproj", "{39CD69D2-363F-4B98-9226-464E871E64E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D834E32C-21DD-4EDB-90BC-96B518BC99A8}"
 	ProjectSection(SolutionItems) = preProject

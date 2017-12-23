@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 
 // General Information
-[assembly: AssemblyProduct("PSParallel")]
+[assembly: AssemblyProduct("PSConcurrent")]
 [assembly: AssemblyCompany("Jeffrey Sharp")]
 [assembly: AssemblyCopyright("Copyright 2017 Jeffrey Sharp")]
 [assembly: AssemblyVersion("1.0.0")]
@@ -30,7 +30,7 @@ using System.Security;
 
 // Security
 [assembly: SecurityRules(SecurityRuleSet.Level2)]
-[assembly: InternalsVisibleTo("PSParallel.Tests")]
+[assembly: InternalsVisibleTo("PSConcurrent.Tests")]
 
 // Configuration
 #if DEBUG
