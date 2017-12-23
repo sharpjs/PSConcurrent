@@ -23,7 +23,7 @@ using System.Security;
 [assembly: AssemblyProduct("PSConcurrent")]
 [assembly: AssemblyCompany("Jeffrey Sharp")]
 [assembly: AssemblyCopyright("Copyright 2017 Jeffrey Sharp")]
-[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyVersion("0.0.1")]
 
 // Compliance
 [assembly: ComVisible(false)]
