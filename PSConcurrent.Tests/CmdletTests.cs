@@ -14,38 +14,39 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-using FluentAssertions;
+using System.Collections.Generic;
+using System.IO;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using NUnit.Framework;
 
 namespace PSConcurrent.Tests
 {
-    [TestFixture]
-    public class InvokeConcurrentCmdletTests : CmdletTests
+    public class CmdletTests
     {
-        [Test]
-        public void OneScriptWithOutput()
+        private InitialSessionState _initialState;
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
-            var output = Invoke(@"
-                Invoke-Concurrent { 42 }
-            ");
+            _initialState = InitialSessionState.CreateDefault();
 
-            output.Should().HaveCount(1);
+            _initialState.Variables.Add(new SessionStateVariableEntry(
+                "ErrorActionPreference", "Stop", null
+            ));
 
-            output.OfWorker(1).Should().Contain(42);
+            var modulePath = Path.Combine(
+                TestContext.CurrentContext.TestDirectory,
+                "PSConcurrent.psd1"
+            );
+
+            _initialState.ImportPSModule(new[] { modulePath });
         }
 
-        [Test]
-        public void MultiScriptWithOutput()
+        protected ICollection<PSObject> Invoke(string script)
         {
-            var output = Invoke(@"
-                Invoke-Concurrent { 42 }, { 123 }, { 31337 }
-            ");
-
-            output.Should().HaveCount(3);
-
-            output.OfWorker(1).Should().Contain(   42);
-            output.OfWorker(2).Should().Contain(  123);
-            output.OfWorker(3).Should().Contain(31337);
+            using (var shell = PowerShell.Create(_initialState))
+                return shell.AddScript(script).Invoke();
         }
     }
 }

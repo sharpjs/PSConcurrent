@@ -14,38 +14,23 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-using FluentAssertions;
-using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using System.Management.Automation;
 
-namespace PSConcurrent.Tests
+namespace PSConcurrent
 {
-    [TestFixture]
-    public class InvokeConcurrentCmdletTests : CmdletTests
+    internal static class PSObjectExctensions
     {
-        [Test]
-        public void OneScriptWithOutput()
+        public static IEnumerable<object> OfWorker(
+            this IEnumerable<PSObject> source,
+            int                        workerId)
         {
-            var output = Invoke(@"
-                Invoke-Concurrent { 42 }
-            ");
-
-            output.Should().HaveCount(1);
-
-            output.OfWorker(1).Should().Contain(42);
-        }
-
-        [Test]
-        public void MultiScriptWithOutput()
-        {
-            var output = Invoke(@"
-                Invoke-Concurrent { 42 }, { 123 }, { 31337 }
-            ");
-
-            output.Should().HaveCount(3);
-
-            output.OfWorker(1).Should().Contain(   42);
-            output.OfWorker(2).Should().Contain(  123);
-            output.OfWorker(3).Should().Contain(31337);
+            return source
+                .Select(o => o.BaseObject)
+                .OfType<WorkerOutput>()
+                .Where(o => o.WorkerId == workerId)
+                .Select(o => o.Object);
         }
     }
 }
