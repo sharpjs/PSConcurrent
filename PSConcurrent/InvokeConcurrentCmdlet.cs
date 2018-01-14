@@ -119,8 +119,7 @@ namespace PSConcurrent
 
         protected override void EndProcessing()
         {
-            var task = Task
-                .WhenAll(_workers)
+            Task.WhenAll(_workers)
                 .ContinueWith(_ => _context.Complete());
 
             _context.RunMainThread();
