@@ -54,6 +54,8 @@ namespace PSConcurrent
             HelpMessage
                 = "The script block(s) to run concurrently."
         )]
+        [ValidateNotNull]
+        [AllowEmptyCollection]
         public ScriptBlock[] ScriptBlock { get; set; }
 
         [Parameter(
@@ -69,6 +71,7 @@ namespace PSConcurrent
                 = "Variables to set for script blocks.  "
                 + "Use Get-Variable to obtain PSVariable objects."
         )]
+        [AllowEmptyCollection]
         public PSVariable[] Variable { get; set; }
 
         [Parameter(
@@ -76,6 +79,7 @@ namespace PSConcurrent
                 = "Modules to import for script blocks.  "
                 + "Use Get-Module to obtain PSModuleInfo objects."
         )]
+        [AllowEmptyCollection]
         public PSModuleInfo[] Module { get; set; }
 
         protected override void BeginProcessing()
