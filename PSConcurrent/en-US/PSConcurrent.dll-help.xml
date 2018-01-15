@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<helpItems schema="maml"
+            xmlns="http://msh"
+       xmlns:maml="http://schemas.microsoft.com/maml/2004/10"
+    xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10"
+        xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
+  <!-- 
+    Documentation:
+    https://msdn.microsoft.com/en-us/library/bb525433(v=vs.85).aspx
+  -->
+
+  <command:command>
+    <command:details>
+      <command:name>Invoke-Concurrent</command:name>
+      <command:verb>Invoke</command:verb>
+      <command:noun>Concurrent</command:noun>
+      <maml:description>
+        <maml:para>Invokes a set of script blocks concurrently.</maml:para>
+      </maml:description>
+    </command:details>
+
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Invoke-Concurrent</maml:name>
+        <command:parameter required="true" position="0" pipelineInput="true (ByValue, ByPropertyName)" globbing="false">
+          <maml:name>ScriptBlock</maml:name>
+          <command:parameterValue required="true">ScriptBlock[]</command:parameterValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+
+    <command:parameters>
+      <command:parameter required="true" position="0" pipelineInput="true (ByValue, ByPropertyName)" globbing="false">
+        <maml:name>ScriptBlock</maml:name>
+        <maml:description>
+          <maml:para>The script block(s) to run concurrently.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true">ScriptBlock[]</command:parameterValue>
+        <dev:defaultValue>None</dev:defaultValue>
+        <dev:type>ScriptBlock[]</dev:type>
+      </command:parameter>
+    </command:parameters>
+
+  </command:command>
+
+</helpItems>
