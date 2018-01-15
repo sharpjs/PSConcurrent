@@ -1,5 +1,5 @@
 ﻿<#
-    Copyright (C) 2017 Jeffrey Sharp
+    Copyright (C) 2018 Jeffrey Sharp
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,7 @@
     # General
     Author      = 'Jeffrey Sharp'
     CompanyName = 'Jeffrey Sharp'
-    Copyright   = 'Copyright (C) 2017 Jeffrey Sharp'
+    Copyright   = 'Copyright (C) 2018 Jeffrey Sharp'
     Description = 'Provides the Invoke-Concurrent cmdlet, which can run a set of ScriptBlocks concurrently, up to a configurable maximum concurrency level.'
 
     # Requirements
