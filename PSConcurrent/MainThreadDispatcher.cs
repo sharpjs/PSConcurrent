@@ -88,7 +88,7 @@ namespace PSConcurrent
             _queue.CompleteAdding();
         }
 
-        private struct Thunk
+        private readonly struct Thunk
         {
             private readonly Action               _action;
             private readonly ManualResetEventSlim _done;
