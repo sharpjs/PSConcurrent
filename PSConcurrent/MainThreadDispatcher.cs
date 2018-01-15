@@ -50,8 +50,8 @@ namespace PSConcurrent
 
             if (_queue.IsAddingCompleted)
                 throw new InvalidAsynchronousStateException(
-                    "Failed to invoke a method on the main thread, " +
-                    "because the destination event loop has exited."
+                    "Failed to invoke an action on the main thread, " +
+                    "because the main-thread dispatch loop has completed."
                 );
 
             using (var done = new ManualResetEventSlim())
@@ -62,8 +62,8 @@ namespace PSConcurrent
         }
 
         /// <summary>
-        ///   Runs the main-thread loop, invoking on the current thread any
-        ///   actions passed to <see cref="InvokeOnMainThread(Action)"/>,
+        ///   Runs the main-thread dispatch loop, invoking on the current thread
+        ///   any actions passed to <see cref="InvokeOnMainThread(Action)"/>,
         ///   until <see cref="Complete"/> is called.
         /// </summary>
         /// <remarks>
@@ -77,7 +77,7 @@ namespace PSConcurrent
         }
 
         /// <summary>
-        ///   Causes the main-thread loop to complete.
+        ///   Causes the main-thread dispatch loop to complete.
         ///   <see cref="Run"/> will return.
         /// </summary>
         /// <remarks>
