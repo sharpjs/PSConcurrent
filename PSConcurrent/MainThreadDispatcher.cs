@@ -72,7 +72,7 @@ namespace PSConcurrent
         /// </remarks>
         public void Run()
         {
-            while (_queue.TryTake(out var thunk))
+            while (_queue.TryTake(out var thunk, Timeout.InfiniteTimeSpan))
                 thunk.Invoke();
         }
 
