@@ -32,13 +32,13 @@ namespace PSConcurrent
         private readonly CancellationTokenSource
             _cancellation = new CancellationTokenSource();
 
-        private SemaphoreSlim                    _semaphore;
-        private ConcurrentQueue<Task>            _workers;
-        private int                              _workerCount;
-        private MainThreadSynchronizationContext _context;
-        private ConsoleState                     _console;
-        private ConcurrentBag<Exception>         _exceptions;
-        private int                              _isDisposed;
+        private SemaphoreSlim            _semaphore;
+        private ConcurrentQueue<Task>    _workers;
+        private int                      _workerCount;
+        private MainThreadDispatcher     _mainThread;
+        private ConsoleState             _console;
+        private ConcurrentBag<Exception> _exceptions;
+        private int                      _isDisposed;
 
         private PSHost Host
             => CommandRuntime.Host;
@@ -88,7 +88,7 @@ namespace PSConcurrent
             );
 
             _workers    = new ConcurrentQueue<Task>();
-            _context    = new MainThreadSynchronizationContext();
+            _mainThread = new MainThreadDispatcher();
             _console    = new ConsoleState();
             _exceptions = new ConcurrentBag<Exception>();
         }
@@ -120,9 +120,9 @@ namespace PSConcurrent
         protected override void EndProcessing()
         {
             Task.WhenAll(_workers)
-                .ContinueWith(_ => _context.Complete());
+                .ContinueWith(_ => _mainThread.Complete());
 
-            _context.RunMainThread();
+            _mainThread.Run();
             _workers = null; // disposal unnecessary
 
             ThrowCollectedExceptions();
@@ -142,8 +142,7 @@ namespace PSConcurrent
         {
             try
             {
-                using (new SynchronizationScope(_context))
-                    RunScript(script, workerId);
+                RunScript(script, workerId);
             }
             finally
             {
@@ -195,11 +194,13 @@ namespace PSConcurrent
 
         private void HandleOutput(int workerId, object obj)
         {
-            _context.Send(WriteObject, new WorkerOutput
+            var output = new WorkerOutput
             {
                 WorkerId = workerId,
                 Object   = obj
-            });
+            };
+
+            _mainThread.InvokeOnMainThread(() => WriteObject(output));
         }
 
         private InitialSessionState CreateInitialSessionState(int workerId)

@@ -63,9 +63,8 @@
     </Compile>
     <Compile Include="ConsoleState.cs" />
     <Compile Include="InvokeConcurrentCmdlet.cs" />
-    <Compile Include="MainThreadSynchronizationContext.cs" />
+    <Compile Include="MainThreadDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SynchronizationScope.cs" />
     <Compile Include="WorkerHost.cs" />
     <Compile Include="WorkerHostUI.cs" />
     <Compile Include="WorkerOutput.cs" />
