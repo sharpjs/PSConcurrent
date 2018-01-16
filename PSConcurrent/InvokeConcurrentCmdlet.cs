@@ -50,35 +50,21 @@ namespace PSConcurrent
             Position                        = 0,
             Mandatory                       = true,
             ValueFromPipeline               = true,
-            ValueFromPipelineByPropertyName = true,
-            HelpMessage
-                = "The script block(s) to run concurrently."
+            ValueFromPipelineByPropertyName = true
         )]
         [ValidateNotNull]
         [AllowEmptyCollection]
         public ScriptBlock[] ScriptBlock { get; set; }
 
-        [Parameter(
-            HelpMessage
-                = "The maximum number of simultaneously running script blocks.  "
-                + "The default is the number of processor threads on the current computer."
-        )]
+        [Parameter(ValueFromPipelineByPropertyName = true)]
         [ValidateRange(1, int.MaxValue)]
         public int? MaxConcurrency { get; set; }
 
-        [Parameter(
-            HelpMessage
-                = "Variables to set for script blocks.  "
-                + "Use Get-Variable to obtain PSVariable objects."
-        )]
+        [Parameter(ValueFromPipelineByPropertyName = true)]
         [AllowEmptyCollection]
         public PSVariable[] Variable { get; set; }
 
-        [Parameter(
-            HelpMessage
-                = "Modules to import for script blocks.  "
-                + "Use Get-Module to obtain PSModuleInfo objects."
-        )]
+        [Parameter(ValueFromPipelineByPropertyName = true)]
         [AllowEmptyCollection]
         public PSModuleInfo[] Module { get; set; }
 
