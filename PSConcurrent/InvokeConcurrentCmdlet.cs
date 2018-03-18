@@ -33,8 +33,8 @@ namespace PSConcurrent
             _cancellation = new CancellationTokenSource();
 
         private SemaphoreSlim            _semaphore;
-        private ConcurrentQueue<Task>    _workers;
-        private int                      _workerCount;
+        private ConcurrentQueue<Task>    _tasks;
+        private int                      _taskCount;
         private MainThreadDispatcher     _mainThread;
         private ConsoleState             _console;
         private ConcurrentBag<Exception> _exceptions;
@@ -77,7 +77,7 @@ namespace PSConcurrent
                 maxCount:     concurrency
             );
 
-            _workers    = new ConcurrentQueue<Task>();
+            _tasks      = new ConcurrentQueue<Task>();
             _mainThread = new MainThreadDispatcher();
             _console    = new ConsoleState();
             _exceptions = new ConcurrentBag<Exception>();
@@ -92,9 +92,9 @@ namespace PSConcurrent
 
                 _semaphore.Wait();
 
-                var workerId = ++_workerCount;
+                var workerId = ++_taskCount;
 
-                _workers.Enqueue(Task
+                _tasks.Enqueue(Task
                     .Run(
                         () => WorkerMain(script, workerId),
                         _cancellation.Token
@@ -109,11 +109,11 @@ namespace PSConcurrent
 
         protected override void EndProcessing()
         {
-            Task.WhenAll(_workers)
+            Task.WhenAll(_tasks)
                 .ContinueWith(_ => _mainThread.Complete());
 
             _mainThread.Run();
-            _workers = null; // disposal unnecessary
+            _tasks = null; // disposal unnecessary
 
             ThrowCollectedExceptions();
         }
@@ -292,11 +292,11 @@ namespace PSConcurrent
 
             if (disposed && managed)
             {
-                if (_workers != null)
+                if (_tasks != null)
                 {
-                    while (_workers.TryDequeue(out var task))
+                    while (_tasks.TryDequeue(out var task))
                         task.Dispose();
-                    _workers = null;
+                    _tasks = null;
                 }
 
                 if (_semaphore != null)
