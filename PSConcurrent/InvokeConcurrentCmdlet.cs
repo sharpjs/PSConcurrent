@@ -130,12 +130,25 @@ namespace PSConcurrent
 
         private void WorkerMain(ScriptBlock script, int workerId)
         {
+            var host = null as WorkerHost;
             try
             {
-                RunScript(script, workerId);
+                host = new WorkerHost(Host, _console, workerId);
+                host.UI.WriteLine("Starting");
+
+                RunScript(script, workerId, host);
+                //RunScript(script, workerId);
+            }
+            catch (Exception e)
+            {
+                HandleException(e, workerId, host);
+                _cancellation.Cancel();
             }
             finally
             {
+                if (host != null)
+                    host.UI.WriteLine("Ended");
+
                 _semaphore.Release();
             }
         }
