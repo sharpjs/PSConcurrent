@@ -14,11 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-using System.Reflection;
-
-// General Information
-[assembly: AssemblyTitle       ("PSConcurrent.Tests")]
-[assembly: AssemblyDescription ("Tests for PowerShell Invoke-Concurrent Cmdlet")]
+using System.Runtime.InteropServices;
+using System.Security;
 
 // Security
 //
@@ -26,4 +23,7 @@ using System.Reflection;
 // being security-critical violates an inheritance rule.
 // http://msdn.microsoft.com/en-us/library/dd233102.aspx
 //
-// (default behavior; no security attribute)
+[assembly: SecurityRules(SecurityRuleSet.Level2)]
+
+// COM Compliance
+[assembly: ComVisible(false)]

@@ -45,8 +45,9 @@ namespace PSConcurrent
         public override PSHostRawUserInterface RawUI
             => _ui.RawUI;
 
-        public override bool SupportsVirtualTerminal
-            => _ui.SupportsVirtualTerminal;
+        // Gone?
+        //public override bool SupportsVirtualTerminal
+        //    => _ui.SupportsVirtualTerminal;
 
         public override void Write(string text)
         {

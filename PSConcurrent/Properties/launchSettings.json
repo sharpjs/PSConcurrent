@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RSMassTransit.PowerShell": {
+      "commandName": "Executable",
+      "executablePath": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "commandLineArgs": "-NoLogo -NoProfile -NoExit -Command \"Import-Module .\\PSConcurrent.psd1\"",
+      "workingDirectory": "$(OutDir)"
+    }
+  }
+}
