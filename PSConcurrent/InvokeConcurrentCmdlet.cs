@@ -137,7 +137,6 @@ namespace PSConcurrent
                 host.UI.WriteLine("Starting");
 
                 RunScript(script, workerId, host);
-                //RunScript(script, workerId);
             }
             catch (Exception e)
             {
