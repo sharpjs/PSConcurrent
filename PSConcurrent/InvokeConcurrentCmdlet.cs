@@ -92,15 +92,15 @@ namespace PSConcurrent
 
                 _semaphore.Wait();
 
-                var workerId = ++_taskCount;
+                var taskId = ++_taskCount;
 
                 _tasks.Enqueue(Task
                     .Run(
-                        () => WorkerMain(script, workerId),
+                        () => WorkerMain(script, taskId),
                         _cancellation.Token
                     )
                     .ContinueWith(
-                        task => HandleException(task.Exception, workerId),
+                        task => HandleException(task.Exception, taskId),
                         TaskContinuationOptions.OnlyOnFaulted
                     )
                 );
@@ -128,19 +128,19 @@ namespace PSConcurrent
             _cancellation.Cancel();
         }
 
-        private void WorkerMain(ScriptBlock script, int workerId)
+        private void WorkerMain(ScriptBlock script, int taskId)
         {
             var host = null as WorkerHost;
             try
             {
-                host = new WorkerHost(Host, _console, workerId);
+                host = new WorkerHost(Host, _console, taskId);
                 host.UI.WriteLine("Starting");
 
-                RunScript(script, workerId, host);
+                RunScript(script, taskId, host);
             }
             catch (Exception e)
             {
-                HandleException(e, workerId, host);
+                HandleException(e, taskId, host);
                 _cancellation.Cancel();
             }
             finally
@@ -152,17 +152,17 @@ namespace PSConcurrent
             }
         }
 
-        private void RunScript(ScriptBlock script, int workerId)
+        private void RunScript(ScriptBlock script, int taskId)
         {
-            var host = new WorkerHost(Host, _console, workerId);
+            var host = new WorkerHost(Host, _console, taskId);
             try
             {
                 host.UI.WriteLine("Starting");
-                RunScript(script, workerId, host);
+                RunScript(script, taskId, host);
             }
             catch (Exception e)
             {
-                HandleException(e, workerId, host);
+                HandleException(e, taskId, host);
                 _cancellation.Cancel();
             }
             finally
@@ -171,20 +171,20 @@ namespace PSConcurrent
             }
         }
 
-        private void RunScript(ScriptBlock script, int workerId, WorkerHost host)
+        private void RunScript(ScriptBlock script, int taskId, WorkerHost host)
         {
-            var state = CreateInitialSessionState(workerId);
+            var state = CreateInitialSessionState(taskId);
 
             using (var runspace = RunspaceFactory.CreateRunspace(host, state))
             {
-                runspace.Name          = $"Invoke-Concurrent-{workerId}";
+                runspace.Name          = $"Invoke-Concurrent-{taskId}";
                 runspace.ThreadOptions = PSThreadOptions.UseCurrentThread;
                 runspace.Open();
 
                 using (var shell = PowerShell.Create())
                 {
                     var output = new PSDataCollection<PSObject>();
-                    output.DataAdding += (s, e) => HandleOutput(workerId, e.ItemAdded);
+                    output.DataAdding += (s, e) => HandleOutput(taskId, e.ItemAdded);
 
                     shell.Runspace = runspace;
                     shell.AddScript(script.ToString()).Invoke(null, output);
@@ -194,18 +194,18 @@ namespace PSConcurrent
             }
         }
 
-        private void HandleOutput(int workerId, object obj)
+        private void HandleOutput(int taskId, object obj)
         {
             var output = new WorkerOutput
             {
-                WorkerId = workerId,
+                WorkerId = taskId,
                 Object   = obj
             };
 
             _mainThread.InvokeOnMainThread(() => WriteObject(output));
         }
 
-        private InitialSessionState CreateInitialSessionState(int workerId)
+        private InitialSessionState CreateInitialSessionState(int taskId)
         {
             var state = InitialSessionState.CreateDefault();
 
@@ -228,7 +228,7 @@ namespace PSConcurrent
             ));
 
             state.Variables.Add(new SessionStateVariableEntry(
-                "WorkerId", workerId, null
+                "WorkerId", taskId, null
             ));
 
             state.Variables.Add(new SessionStateVariableEntry(
@@ -238,23 +238,23 @@ namespace PSConcurrent
             return state;
         }
 
-        private void HandleException(Exception e, int workerId, WorkerHost host = null)
+        private void HandleException(Exception e, int taskId, WorkerHost host = null)
         {
             if (e is AggregateException aggregate)
             {
                 foreach (var inner in aggregate.InnerExceptions)
-                    HandleException(e, workerId, host);
+                    HandleException(e, taskId, host);
             }
             else if (e.InnerException is Exception inner)
             {
-                HandleException(inner, workerId, host);
+                HandleException(inner, taskId, host);
             }
             else
             {
                 if (host != null)
                     host.UI.WriteErrorLine(GetMostHelpfulMessage(e));
 
-                e.Data["WorkerId"] = workerId;
+                e.Data["TaskId"] = taskId;
                 _exceptions.Add(e);
             }
         }
