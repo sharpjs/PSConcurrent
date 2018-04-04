@@ -23,10 +23,10 @@ namespace PSConcurrent
 {
     internal class TaskHost : PSHost
     {
-        private readonly PSHost     _host;
-        private readonly TaskHostUI _ui;
-        private readonly Guid       _id;
-        private readonly string     _name;
+        private readonly PSHost     _host;  // Underlying host implementation
+        private readonly TaskHostUI _ui;    // Wrapped UI implementation
+        private readonly Guid       _id;    // Host identifier (random)
+        private readonly string     _name;  // Host name
 
         private static readonly Version _version
             = typeof(TaskHost).Assembly.GetName().Version;
