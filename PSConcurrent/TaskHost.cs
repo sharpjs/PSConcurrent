@@ -21,22 +21,22 @@ using System.Management.Automation.Host;
 
 namespace PSConcurrent
 {
-    internal class WorkerHost : PSHost
+    internal class TaskHost : PSHost
     {
-        private readonly PSHost       _host;
-        private readonly WorkerHostUI _ui;
-        private readonly Guid         _id;
-        private readonly string       _name;
+        private readonly PSHost     _host;
+        private readonly TaskHostUI _ui;
+        private readonly Guid       _id;
+        private readonly string     _name;
 
         private static readonly Version _version
-            = typeof(WorkerHost).Assembly.GetName().Version;
+            = typeof(TaskHost).Assembly.GetName().Version;
 
-        internal WorkerHost(PSHost host, ConsoleState state, int workerId)
+        internal TaskHost(PSHost host, ConsoleState state, int taskId)
         {
             _host = host ?? throw new ArgumentNullException(nameof(host));
-            _ui   = new WorkerHostUI(host.UI, state, workerId);
+            _ui   = new TaskHostUI(host.UI, state, taskId);
             _id   = Guid.NewGuid();
-            _name = $"Invoke-Concurrent[{workerId}]";
+            _name = $"Invoke-Concurrent[{taskId}]";
         }
 
         public override Guid InstanceId

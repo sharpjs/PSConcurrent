@@ -110,12 +110,12 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>WorkerOutput[]</maml:name>
+          <maml:name>PSConcurrent.TaskOutput[]</maml:name>
           <maml:uri/>
           <maml:description/>
         </dev:type>
         <maml:description>
-          <maml:para>Output of the invoked ScriptBlocks.  Each output object is wrapped in WorkerOutput object that identifies which scriptblock produced the output.</maml:para>
+          <maml:para>Output of the invoked ScriptBlocks.  Each output object is wrapped in TaskOutput object that identifies which scriptblock produced the output.</maml:para>
         </maml:description>
       </command:returnValue>
     </command:returnValues>

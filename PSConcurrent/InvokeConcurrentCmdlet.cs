@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace PSConcurrent
 {
     [Cmdlet(VerbsLifecycle.Invoke, "Concurrent")]
-    [OutputType(typeof(WorkerOutput))]
+    [OutputType(typeof(TaskOutput))]
     public class InvokeConcurrentCmdlet : Cmdlet
     {
         private readonly CancellationTokenSource
@@ -96,7 +96,7 @@ namespace PSConcurrent
 
                 _tasks.Enqueue(Task
                     .Run(
-                        () => WorkerMain(script, taskId),
+                        () => TaskMain(script, taskId),
                         _cancellation.Token
                     )
                     .ContinueWith(
@@ -128,12 +128,12 @@ namespace PSConcurrent
             _cancellation.Cancel();
         }
 
-        private void WorkerMain(ScriptBlock script, int taskId)
+        private void TaskMain(ScriptBlock script, int taskId)
         {
-            var host = null as WorkerHost;
+            var host = null as TaskHost;
             try
             {
-                host = new WorkerHost(Host, _console, taskId);
+                host = new TaskHost(Host, _console, taskId);
                 host.UI.WriteLine("Starting");
 
                 RunScript(script, taskId, host);
@@ -154,7 +154,7 @@ namespace PSConcurrent
 
         private void RunScript(ScriptBlock script, int taskId)
         {
-            var host = new WorkerHost(Host, _console, taskId);
+            var host = new TaskHost(Host, _console, taskId);
             try
             {
                 host.UI.WriteLine("Starting");
@@ -171,7 +171,7 @@ namespace PSConcurrent
             }
         }
 
-        private void RunScript(ScriptBlock script, int taskId, WorkerHost host)
+        private void RunScript(ScriptBlock script, int taskId, TaskHost host)
         {
             var state = CreateInitialSessionState(taskId);
 
@@ -196,10 +196,10 @@ namespace PSConcurrent
 
         private void HandleOutput(int taskId, object obj)
         {
-            var output = new WorkerOutput
+            var output = new TaskOutput
             {
-                WorkerId = taskId,
-                Object   = obj
+                TaskId = taskId,
+                Object = obj
             };
 
             _mainThread.InvokeOnMainThread(() => WriteObject(output));
@@ -228,7 +228,7 @@ namespace PSConcurrent
             ));
 
             state.Variables.Add(new SessionStateVariableEntry(
-                "WorkerId", taskId, null
+                "TaskId", taskId, null
             ));
 
             state.Variables.Add(new SessionStateVariableEntry(
@@ -238,7 +238,7 @@ namespace PSConcurrent
             return state;
         }
 
-        private void HandleException(Exception e, int taskId, WorkerHost host = null)
+        private void HandleException(Exception e, int taskId, TaskHost host = null)
         {
             if (e is AggregateException aggregate)
             {

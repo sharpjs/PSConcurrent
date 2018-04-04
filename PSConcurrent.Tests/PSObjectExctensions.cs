@@ -22,14 +22,14 @@ namespace PSConcurrent
 {
     internal static class PSObjectExctensions
     {
-        public static IEnumerable<object> OfWorker(
+        public static IEnumerable<object> OfTask(
             this IEnumerable<PSObject> source,
-            int                        workerId)
+            int                        taskId)
         {
             return source
                 .Select(o => o.BaseObject)
-                .OfType<WorkerOutput>()
-                .Where(o => o.WorkerId == workerId)
+                .OfType<TaskOutput>()
+                .Where(o => o.TaskId == taskId)
                 .Select(o => o.Object);
         }
     }

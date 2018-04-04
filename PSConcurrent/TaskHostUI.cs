@@ -23,21 +23,21 @@ using System.Security;
 
 namespace PSConcurrent
 {
-    internal class WorkerHostUI : PSHostUserInterface
+    internal class TaskHostUI : PSHostUserInterface
     {
-        private readonly PSHostUserInterface _ui;        // Underlying UI implementation
-        private readonly ConsoleState        _console;   // Overall console state
-        private readonly int                 _workerId;  // Identifier of this worker
-        private          bool                _workerBol; // Whether this worker should be at BOL
+        private readonly PSHostUserInterface _ui;       // Underlying UI implementation
+        private readonly ConsoleState        _console;  // Overall console state
+        private readonly int                 _taskId;   // Identifier of this task
+        private          bool                _taskBol;  // Whether this task should be at BOL
 
-        internal WorkerHostUI(PSHostUserInterface ui, ConsoleState console, int workerId)
+        internal TaskHostUI(PSHostUserInterface ui, ConsoleState console, int taskId)
         {
-            _ui        = ui      ?? throw new ArgumentNullException(nameof(ui));
-            _console   = console ?? throw new ArgumentNullException(nameof(console));
-            _workerId  = workerId;
-            _workerBol = true;
+            _ui      = ui      ?? throw new ArgumentNullException(nameof(ui));
+            _console = console ?? throw new ArgumentNullException(nameof(console));
+            _taskId  = taskId;
+            _taskBol = true;
 
-            Header = $"Worker {workerId}";
+            Header = $"Task {taskId}";
         }
 
         public string Header { get; set; }
@@ -45,7 +45,9 @@ namespace PSConcurrent
         public override PSHostRawUserInterface RawUI
             => _ui.RawUI;
 
-        // Gone?
+        // This method disappeared when the project was changed to use the
+        // reference assemblies from NuGet.
+        //
         //public override bool SupportsVirtualTerminal
         //    => _ui.SupportsVirtualTerminal;
 
@@ -198,32 +200,32 @@ namespace PSConcurrent
         {
             if (!_console.IsAtBol)
             {
-                if (_console.LastWorkerId == _workerId)
-                    // The console is not at BOL, but this worker was the last
-                    // one to write to it.  The console state is as the worker
-                    // expects.  There is no need to modify the console state or
-                    // to add any information to the text.
+                if (_console.LastTaskId == _taskId)
+                    // The console is not at BOL, but this task was the last
+                    // one to write to it.  The console state is as the task
+                    // expects.  There is no need to modify the console state
+                    // or to add any information to the text.
                     return text;
 
-                // The console is not at BOL, because some other worker wrote
-                // a partial line to it.  End that line, so that this worker's
-                // text will start on a new line.
+                // The console is not at BOL, because some other task wrote a
+                // partial line to it.  End that line, so that this task's text
+                // will start on a new line.
                 _ui.WriteLine();
                 _console.IsAtBol = true;
             }
 
             // The console is at BOL.  Prefix the text with the line header.
-            // If this worker last wrote a partial line that was interrupted by
-            // some other worker, add a line continuation indicator.
-            return _workerBol
+            // If this task last wrote a partial line that was interrupted by
+            // some other task, add a line continuation indicator.
+            return _taskBol
                 ? $"[{Header}]: {text}"
                 : $"[{Header}]: (...) {text}";
         }
 
         private void Update(bool eol)
         {
-            _console.IsAtBol      = _workerBol = eol;
-            _console.LastWorkerId = _workerId;
+            _console.IsAtBol    = _taskBol = eol;
+            _console.LastTaskId = _taskId;
         }
 
         private static bool EndsWithEol(string value)

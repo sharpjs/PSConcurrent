@@ -19,6 +19,6 @@ namespace PSConcurrent
     internal class ConsoleState
     {
         internal bool IsAtBol = true;
-        internal int  LastWorkerId;
+        internal int  LastTaskId;
     }
 }

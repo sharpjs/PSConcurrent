@@ -16,9 +16,9 @@
 
 namespace PSConcurrent
 {
-    public class WorkerOutput
+    public class TaskOutput
     {
-        public int WorkerId { get; set; }
+        public int TaskId { get; set; }
 
         public object Object { get; set; }
     }

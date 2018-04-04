@@ -31,7 +31,7 @@ namespace PSConcurrent.Tests
 
             output.Should().HaveCount(1);
 
-            output.OfWorker(1).Should().Contain(42);
+            output.OfTask(1).Should().Contain(42);
         }
 
         [Test]
@@ -43,9 +43,9 @@ namespace PSConcurrent.Tests
 
             output.Should().HaveCount(3);
 
-            output.OfWorker(1).Should().Contain(   42);
-            output.OfWorker(2).Should().Contain(  123);
-            output.OfWorker(3).Should().Contain(31337);
+            output.OfTask(1).Should().Contain(   42);
+            output.OfTask(2).Should().Contain(  123);
+            output.OfTask(3).Should().Contain(31337);
         }
     }
 }
