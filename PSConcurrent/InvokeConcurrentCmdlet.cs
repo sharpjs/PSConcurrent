@@ -97,16 +97,10 @@ namespace PSConcurrent
 
                 var taskId = ++_taskCount;
 
-                _tasks.Enqueue(Task
-                    .Run(
-                        () => TaskMain(script, taskId),
-                        _cancellation.Token
-                    )
-                    .ContinueWith(
-                        task => HandleException(task.Exception, taskId),
-                        TaskContinuationOptions.OnlyOnFaulted
-                    )
-                );
+                _tasks.Enqueue(Task.Run(
+                    () => TaskMain(script, taskId),
+                    _cancellation.Token
+                ));
             }
         }
 
@@ -133,24 +127,12 @@ namespace PSConcurrent
 
         private void TaskMain(ScriptBlock script, int taskId)
         {
-            var host = null as TaskHost;
             try
             {
-                host = new TaskHost(Host, _console, taskId);
-                host.UI.WriteLine("Starting");
-
-                RunScript(script, taskId, host);
-            }
-            catch (Exception e)
-            {
-                HandleException(e, taskId, host);
-                _cancellation.Cancel();
+                RunScript(script, taskId);
             }
             finally
             {
-                if (host != null)
-                    host.UI.WriteLine("Ended");
-
                 _semaphore.Release();
             }
         }
@@ -165,8 +147,8 @@ namespace PSConcurrent
             }
             catch (Exception e)
             {
-                HandleException(e, taskId, host);
                 _cancellation.Cancel();
+                HandleException(e, taskId, host);
             }
             finally
             {
@@ -254,11 +236,9 @@ namespace PSConcurrent
             }
             else
             {
-                if (host != null)
-                    host.UI.WriteErrorLine(GetMostHelpfulMessage(e));
-
-                e.Data["TaskId"] = taskId;
                 _exceptions.Add(e);
+                e.Data["TaskId"] = taskId;
+                host.UI.WriteErrorLine(GetMostHelpfulMessage(e));
             }
         }
 
