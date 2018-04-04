@@ -16,10 +16,19 @@
 
 namespace PSConcurrent
 {
+    /// <summary>
+    ///   Wrapper for an output object produced by <c>Invoke-Concurrent</c>.
+    /// </summary>
     public class TaskOutput
     {
+        /// <summary>
+        ///   The id of the task that produced the output object.
+        /// </summary>
         public int TaskId { get; set; }
 
+        /// <summary>
+        ///   The output object produced by the task.
+        /// </summary>
         public object Object { get; set; }
     }
 }

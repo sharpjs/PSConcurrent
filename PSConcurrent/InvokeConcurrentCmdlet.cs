@@ -25,6 +25,9 @@ using System.Threading.Tasks;
 
 namespace PSConcurrent
 {
+    /// <summary>
+    ///   Invokes <c>ScriptBlock</c>s concurrently.
+    /// </summary>
     [Cmdlet(VerbsLifecycle.Invoke, "Concurrent")]
     [OutputType(typeof(TaskOutput))]
     public class InvokeConcurrentCmdlet : Cmdlet

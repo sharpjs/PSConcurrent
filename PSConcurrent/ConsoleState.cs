@@ -16,9 +16,20 @@
 
 namespace PSConcurrent
 {
+    /// <summary>
+    ///   Necessary state to keep when multiple tasks are writing concurrently
+    ///   to a textual output console.
+    /// </summary>
     internal class ConsoleState
     {
+        /// <summary>
+        ///   Whether the console is at the beginning of a line.
+        /// </summary>
         internal bool IsAtBol = true;
-        internal int  LastTaskId;
+
+        /// <summary>
+        ///   The id of the task that most recently wrote to the console.
+        /// </summary>
+        internal int LastTaskId;
     }
 }
