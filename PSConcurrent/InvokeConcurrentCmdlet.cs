@@ -51,12 +51,6 @@ namespace PSConcurrent
             _cancellation = new CancellationTokenSource();
         }
 
-        private PSHost Host
-            => CommandRuntime.Host;
-
-        private PSHostUserInterface UI
-            => CommandRuntime.Host.UI;
-
         [Parameter(
             Position                        = 0,
             Mandatory                       = true,
@@ -78,6 +72,12 @@ namespace PSConcurrent
         [Parameter(ValueFromPipelineByPropertyName = true)]
         [AllowEmptyCollection]
         public PSModuleInfo[] Module { get; set; }
+
+        private PSHost Host
+            => CommandRuntime.Host;
+
+        private PSHostUserInterface UI
+            => CommandRuntime.Host.UI;
 
         protected override void BeginProcessing()
         {
