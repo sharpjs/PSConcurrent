@@ -31,7 +31,7 @@ namespace PSConcurrent
     /// </summary>
     [Cmdlet(VerbsLifecycle.Invoke, "Concurrent")]
     [OutputType(typeof(TaskOutput))]
-    public class InvokeConcurrentCmdlet : Cmdlet
+    public class InvokeConcurrentCmdlet : Cmdlet, IDisposable
     {
         private readonly List<Task>               _tasks;
         private readonly MainThreadDispatcher     _mainThread;
