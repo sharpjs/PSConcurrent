@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Host;
@@ -35,9 +36,8 @@ namespace PSConcurrent
         private readonly CancellationTokenSource
             _cancellation = new CancellationTokenSource();
 
-        private SemaphoreSlim            _semaphore;
-        private ConcurrentQueue<Task>    _tasks;
-        private int                      _taskCount;
+        private List<Task>               _tasks;
+        private TaskFactory              _taskFactory;
         private MainThreadDispatcher     _mainThread;
         private ConsoleState             _console;
         private ConcurrentBag<Exception> _exceptions;
@@ -73,17 +73,34 @@ namespace PSConcurrent
 
         protected override void BeginProcessing()
         {
-            var concurrency = MaxConcurrency ?? Environment.ProcessorCount;
-
-            _semaphore = new SemaphoreSlim(
-                initialCount: concurrency,
-                maxCount:     concurrency
-            );
-
-            _tasks      = new ConcurrentQueue<Task>();
+            _tasks      = new List<Task>();
             _mainThread = new MainThreadDispatcher();
             _console    = new ConsoleState();
             _exceptions = new ConcurrentBag<Exception>();
+
+            // Ask default scheduler to preserve FIFO ordering, so that tasks
+            // tend to execute in that order, regardless of whether this cmdlet
+            // uses LimitedConcurrencyTaskScheduler or the default scheduler.
+            const TaskCreationOptions Creation
+                = TaskCreationOptions.PreferFairness;
+
+            // This cmdlet ensures only that the given ScriptBlocks execute
+            // with the given maximum concurrency; if those ScriptBlocks invoke
+            // further concurrent operations, this cmdlet does not limit those
+            // operations' concurrency.
+            const TaskContinuationOptions Continuation
+                = TaskContinuationOptions.HideScheduler;
+
+            // Choose limited-concurrency scheduler if the user specified a
+            // maximum concurrency; otherwise use the default scheduler.
+            var scheduler = MaxConcurrency.HasValue
+                ? new LimitedConcurrencyTaskScheduler(MaxConcurrency.Value)
+                : TaskScheduler.Default;
+
+            // Encapsulate the above decisions into a task factory.
+            _taskFactory = new TaskFactory(
+                _cancellation.Token, Creation, Continuation, scheduler
+            );
         }
 
         protected override void ProcessRecord()
@@ -93,13 +110,10 @@ namespace PSConcurrent
                 if (_cancellation.IsCancellationRequested)
                     return;
 
-                _semaphore.Wait();
+                var taskId = _tasks.Count + 1;
 
-                var taskId = ++_taskCount;
-
-                _tasks.Enqueue(Task.Run(
-                    () => TaskMain(script, taskId),
-                    _cancellation.Token
+                _tasks.Add(_taskFactory.StartNew(
+                    () => TaskMain(script, taskId)
                 ));
             }
         }
@@ -126,18 +140,6 @@ namespace PSConcurrent
         }
 
         private void TaskMain(ScriptBlock script, int taskId)
-        {
-            try
-            {
-                RunScript(script, taskId);
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        private void RunScript(ScriptBlock script, int taskId)
         {
             var host = new TaskHost(Host, _console, taskId);
             try
@@ -289,15 +291,8 @@ namespace PSConcurrent
             {
                 if (_tasks != null)
                 {
-                    while (_tasks.TryDequeue(out var task))
-                        task.Dispose();
+                    _tasks.ForEach(t => t.Dispose());
                     _tasks = null;
-                }
-
-                if (_semaphore != null)
-                {
-                    _semaphore.Dispose();
-                    _semaphore   = null;
                 }
 
                 _cancellation.Dispose();
