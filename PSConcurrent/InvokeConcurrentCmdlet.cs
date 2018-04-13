@@ -183,17 +183,6 @@ namespace PSConcurrent
             }
         }
 
-        private void HandleOutput(int taskId, object obj)
-        {
-            var output = new TaskOutput
-            {
-                TaskId = taskId,
-                Object = obj
-            };
-
-            _mainThread.InvokeOnMainThread(() => WriteObject(output));
-        }
-
         private InitialSessionState CreateInitialSessionState(int taskId)
         {
             var state = InitialSessionState.CreateDefault();
@@ -225,6 +214,17 @@ namespace PSConcurrent
             ));
 
             return state;
+        }
+
+        private void HandleOutput(int taskId, object obj)
+        {
+            var output = new TaskOutput
+            {
+                TaskId = taskId,
+                Object = obj
+            };
+
+            _mainThread.InvokeOnMainThread(() => WriteObject(output));
         }
 
         private void HandleException(Exception e, int taskId, TaskHost host = null)
