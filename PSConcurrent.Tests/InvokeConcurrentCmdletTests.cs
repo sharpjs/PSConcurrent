@@ -26,26 +26,26 @@ namespace PSConcurrent.Tests
         public void OneScriptWithOutput()
         {
             var output = Invoke(@"
-                Invoke-Concurrent { 42 }
+                Invoke-Concurrent {'a'}
             ");
 
             output.Should().HaveCount(1);
 
-            output.OfTask(1).Should().Contain(42);
+            output.OfTask(1).Should().Contain("a");
         }
 
         [Test]
         public void MultiScriptWithOutput()
         {
             var output = Invoke(@"
-                Invoke-Concurrent { 42 }, { 123 }, { 31337 }
+                Invoke-Concurrent {'a'}, {'b'}, {'c'}
             ");
 
             output.Should().HaveCount(3);
 
-            output.OfTask(1).Should().Contain(   42);
-            output.OfTask(2).Should().Contain(  123);
-            output.OfTask(3).Should().Contain(31337);
+            output.OfTask(1).Should().Contain("a");
+            output.OfTask(2).Should().Contain("b");
+            output.OfTask(3).Should().Contain("c");
         }
     }
 }
