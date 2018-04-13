@@ -33,15 +33,14 @@ namespace PSConcurrent
     [OutputType(typeof(TaskOutput))]
     public class InvokeConcurrentCmdlet : Cmdlet
     {
-        private readonly CancellationTokenSource
-            _cancellation = new CancellationTokenSource();
+        private readonly List<Task>               _tasks;
+        private readonly MainThreadDispatcher     _mainThread;
+        private readonly ConsoleState             _console;
+        private readonly ConcurrentBag<Exception> _exceptions;
+        private readonly CancellationTokenSource  _cancellation;
 
-        private List<Task>               _tasks;
-        private TaskFactory              _taskFactory;
-        private MainThreadDispatcher     _mainThread;
-        private ConsoleState             _console;
-        private ConcurrentBag<Exception> _exceptions;
-        private int                      _isDisposed;
+        private TaskFactory _taskFactory;
+        private int         _isDisposed;
 
         private PSHost Host
             => CommandRuntime.Host;
@@ -71,13 +70,17 @@ namespace PSConcurrent
         [AllowEmptyCollection]
         public PSModuleInfo[] Module { get; set; }
 
+        public InvokeConcurrentCmdlet()
+        {
+            _tasks        = new List<Task>();
+            _mainThread   = new MainThreadDispatcher();
+            _console      = new ConsoleState();
+            _exceptions   = new ConcurrentBag<Exception>();
+            _cancellation = new CancellationTokenSource();
+        }
+
         protected override void BeginProcessing()
         {
-            _tasks      = new List<Task>();
-            _mainThread = new MainThreadDispatcher();
-            _console    = new ConsoleState();
-            _exceptions = new ConcurrentBag<Exception>();
-
             // Ask default scheduler to preserve FIFO ordering, so that tasks
             // tend to execute in that order, regardless of whether this cmdlet
             // uses LimitedConcurrencyTaskScheduler or the default scheduler.
@@ -124,7 +127,7 @@ namespace PSConcurrent
                 .ContinueWith(_ => _mainThread.Complete());
 
             _mainThread.Run();
-            _tasks = null; // disposal unnecessary
+            _tasks.Clear(); // disposal unnecessary
 
             ThrowCollectedExceptions();
         }
@@ -288,15 +291,7 @@ namespace PSConcurrent
             var disposed = Interlocked.Exchange(ref _isDisposed, Yes) == No;
 
             if (disposed && managed)
-            {
-                if (_tasks != null)
-                {
-                    _tasks.ForEach(t => t.Dispose());
-                    _tasks = null;
-                }
-
                 _cancellation.Dispose();
-            }
 
             return disposed;
         }
