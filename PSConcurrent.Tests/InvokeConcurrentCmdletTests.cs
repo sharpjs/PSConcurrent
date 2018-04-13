@@ -14,6 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+using System;
+using System.Management.Automation;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -46,6 +48,20 @@ namespace PSConcurrent.Tests
             output.OfTask(1).Should().Contain("a");
             output.OfTask(2).Should().Contain("b");
             output.OfTask(3).Should().Contain("c");
+        }
+
+        [Test]
+        public void Throws()
+        {
+            @"
+                Invoke-Concurrent {'a'}, {throw 'b'}, {'c'} -MaxConcurrency 1
+            "
+            .Invoking(s => Invoke(s))
+            .Should().Throw<CmdletInvocationException>();
+
+            // TODO: Somehow test this too
+            //output.Should().HaveCount(1);
+            //output.OfTask(1).Should().Contain("a");
         }
     }
 }
