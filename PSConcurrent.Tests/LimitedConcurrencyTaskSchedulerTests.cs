@@ -56,7 +56,7 @@ namespace PSConcurrent.Tests
             scheduler.MaximumConcurrencyLevel.Should().Be(42);
         }
 
-        [Test]
+        [Test, Retry(3)]
         public void Run_UpToConcurrencyLimit()
         {
             var scheduler  = new LimitedConcurrencyTaskScheduler(CoreCount);
@@ -68,7 +68,7 @@ namespace PSConcurrent.Tests
             startTimes.Count(t => t < baseline + GraceTime).Should().Be(CoreCount);
         }
 
-        [Test]
+        [Test, Retry(3)]
         public void Run_OverConcurrencyLimit()
         {
             var scheduler  = new LimitedConcurrencyTaskScheduler(CoreCount);
