@@ -127,7 +127,6 @@ namespace PSConcurrent
                 .ContinueWith(_ => _mainThread.Complete());
 
             _mainThread.Run();
-            _tasks.Clear(); // disposal unnecessary
 
             ThrowCollectedExceptions();
         }
