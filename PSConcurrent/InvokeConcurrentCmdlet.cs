@@ -42,6 +42,15 @@ namespace PSConcurrent
         private TaskFactory _taskFactory;
         private int         _isDisposed;
 
+        public InvokeConcurrentCmdlet()
+        {
+            _tasks        = new List<Task>();
+            _mainThread   = new MainThreadDispatcher();
+            _console      = new ConsoleState();
+            _exceptions   = new ConcurrentBag<Exception>();
+            _cancellation = new CancellationTokenSource();
+        }
+
         private PSHost Host
             => CommandRuntime.Host;
 
@@ -69,15 +78,6 @@ namespace PSConcurrent
         [Parameter(ValueFromPipelineByPropertyName = true)]
         [AllowEmptyCollection]
         public PSModuleInfo[] Module { get; set; }
-
-        public InvokeConcurrentCmdlet()
-        {
-            _tasks        = new List<Task>();
-            _mainThread   = new MainThreadDispatcher();
-            _console      = new ConsoleState();
-            _exceptions   = new ConcurrentBag<Exception>();
-            _cancellation = new CancellationTokenSource();
-        }
 
         protected override void BeginProcessing()
         {
