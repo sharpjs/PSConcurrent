@@ -241,8 +241,12 @@ namespace PSConcurrent
             else
             {
                 _exceptions.Add(e);
-                e.Data["TaskId"] = taskId;
+
                 host.UI.WriteErrorLine(GetMostHelpfulMessage(e));
+
+                var data = e.Data;
+                if (data != null)
+                    data["TaskId"] = taskId;
             }
         }
 
