@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Management.Automation;
 using System.Threading;
 using FluentAssertions;
@@ -121,6 +122,44 @@ namespace PSConcurrent.Tests
 
             output.OfTask(1).Should().Contain("TestModuleA Output");
             output.OfTask(2).Should().Contain("TestModuleB Output");
+        }
+
+        [Test]
+        public void TaskIdVariable()
+        {
+            var output = Invoke(
+                @"Invoke-Concurrent {$TaskId}, {$TaskId}, {$TaskId}"
+            );
+
+            output.Should().HaveCount(3);
+
+            output.OfTask(1).Should().Contain(1);
+            output.OfTask(2).Should().Contain(2);
+            output.OfTask(3).Should().Contain(3);
+        }
+
+        [Test]
+        public void ErrorActionPreferenceVariable()
+        {
+            var output = Invoke(
+                @"Invoke-Concurrent {$ErrorActionPreference}"
+            );
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Single().Should().Be("Stop");
+        }
+
+        [Test]
+        public void CancellationTokenVariable()
+        {
+            var output = Invoke(
+                @"Invoke-Concurrent {$CancellationToken}"
+            );
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Single()
+                .Should().BeAssignableTo<CancellationToken>()
+                .And.NotBe(default(CancellationToken));
         }
 
         [Test]
