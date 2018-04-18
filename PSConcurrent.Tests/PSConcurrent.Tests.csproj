@@ -35,4 +35,13 @@
     <ProjectReference Include="..\PSConcurrent\PSConcurrent.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestModuleA.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestModuleB.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

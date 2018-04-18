@@ -76,5 +76,47 @@ namespace PSConcurrent.Tests
 
             output.OfTask(1).Should().Contain("a");
         }
+
+        [Test]
+        public void Variables()
+        {
+            var output = Invoke(
+                @"
+                    $Foo = 'Foo'
+                    $Bar = 'Bar'
+                    Invoke-Concurrent `
+                        { $Foo = 'Wrong Foo'; $Bar = 'Wrong Bar' },
+                        { Start-Sleep -Milliseconds 50; $Foo },
+                        { Start-Sleep -Milliseconds 50; $Bar } `
+                        -Variable (Get-Variable Foo), (Get-Variable Bar)
+                "
+            );
+
+            output.Should().HaveCount(2);
+
+            output.OfTask(1).Should().BeEmpty();
+            output.OfTask(2).Should().Contain("Foo");
+            output.OfTask(3).Should().Contain("Bar");
+        }
+
+        [Test]
+        public void Modules()
+        {
+            var output = Invoke(
+                $@"
+                    cd ""{TestContext.CurrentContext.TestDirectory}""
+                    Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
+                    Invoke-Concurrent `
+                        {{ Invoke-TestModuleA }},
+                        {{ Invoke-TestModuleB }} `
+                        -Module (Get-Module TestModuleA), (Get-Module TestModuleB)
+                "
+            );
+
+            output.Should().HaveCount(2);
+
+            output.OfTask(1).Should().Contain("TestModuleA Output");
+            output.OfTask(2).Should().Contain("TestModuleB Output");
+        }
     }
 }
