@@ -21,6 +21,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Management.Automation.Runspaces;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -238,7 +239,7 @@ namespace PSConcurrent
             if (e is AggregateException aggregate)
             {
                 foreach (var inner in aggregate.InnerExceptions)
-                    HandleException(e, taskId, host);
+                    HandleException(inner, taskId, host);
             }
             else if (e.InnerException is Exception inner)
             {
@@ -258,8 +259,14 @@ namespace PSConcurrent
 
         private void ThrowCollectedExceptions()
         {
-            if (_exceptions.Any())
-                throw new AggregateException(_exceptions);
+            var count = _exceptions.Count;
+            if (count == 0)
+                return;
+
+            if (count == 1)
+                ExceptionDispatchInfo.Capture(_exceptions.First()).Throw();
+
+            throw new AggregateException(_exceptions);
         }
 
         private static string GetMostHelpfulMessage(Exception e)

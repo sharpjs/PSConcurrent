@@ -82,7 +82,7 @@ namespace PSConcurrent.Tests
             output.Should().HaveCount(1);
             output.OfTask(1).Should().Contain("a");
 
-            e.Should().NotBeNull().And.BeAssignableTo<CmdletInvocationException>();
+            e.Should().NotBeNull().And.BeAssignableTo<RuntimeException>();
         }
 
         [Test]
@@ -170,6 +170,109 @@ namespace PSConcurrent.Tests
                 .And.NotBe(default(CancellationToken));
 
             e.Should().BeNull();
+        }
+
+        [Test]
+        public void SingleException()
+        {
+            var (output, e) = Invoke(
+                @"Invoke-Concurrent { throw [InvalidOperationException] 'Oops' }"
+            );
+
+            output.Should().BeEmpty();
+
+            e               .Should().BeAssignableTo<RuntimeException>();
+            e.InnerException.Should().BeAssignableTo<InvalidOperationException>();
+        }
+
+        [Test]
+        public void MultiException()
+        {
+            var (output, e) = Invoke(
+                @"
+                    Invoke-Concurrent `
+                        { sleep -m 100; throw [InvalidOperationException] 'Oops A' },
+                        { sleep -m 100; throw [InvalidOperationException] 'Oops B' }
+                "
+            );
+
+            output.Should().BeEmpty();
+
+            e               .Should().BeAssignableTo<RuntimeException>();
+            e.InnerException.Should().BeAssignableTo<AggregateException>();
+
+            ((AggregateException) e.InnerException).InnerExceptions
+                .Should().HaveCount(2)
+                .And.AllBeAssignableTo<InvalidOperationException>();
+        }
+
+        [Test]
+        public void NestedSingleException()
+        {
+            var (output, e) = Invoke(
+                @"
+                    Invoke-Concurrent {
+                        throw [AggregateException]::new(
+                            [InvalidOperationException] 'Oops A'
+                        )
+                    }
+                "
+            );
+
+            output.Should().BeEmpty();
+
+            e               .Should().BeAssignableTo<RuntimeException>();
+            e.InnerException.Should().BeAssignableTo<InvalidOperationException>();
+        }
+
+        [Test]
+        public void NestedMultiException()
+        {
+            var (output, e) = Invoke(
+                @"
+                    Invoke-Concurrent {
+                        throw [AggregateException]::new(
+                            [InvalidOperationException] 'Oops A',
+                            [InvalidOperationException] 'Oops B'
+                        )
+                    }
+                "
+            );
+
+            output.Should().BeEmpty();
+
+            e               .Should().BeAssignableTo<RuntimeException>();
+            e.InnerException.Should().BeAssignableTo<AggregateException>();
+
+            ((AggregateException) e.InnerException).InnerExceptions
+                .Should().HaveCount(2)
+                .And.AllBeAssignableTo<InvalidOperationException>();
+        }
+
+        [Test]
+        public void NestedJaggedException()
+        {
+            var (output, e) = Invoke(
+                @"
+                    Invoke-Concurrent {
+                        throw [AggregateException]::new(
+                            [InvalidOperationException] 'Oops A',
+                            [AggregateException]::new(
+                                [InvalidOperationException] 'Oops B'
+                            )
+                        )
+                    }
+                "
+            );
+
+            output.Should().BeEmpty();
+
+            e               .Should().BeAssignableTo<RuntimeException>();
+            e.InnerException.Should().BeAssignableTo<AggregateException>();
+
+            ((AggregateException) e.InnerException).InnerExceptions
+                .Should().HaveCount(2)
+                .And.AllBeAssignableTo<InvalidOperationException>();
         }
 
         [Test]
