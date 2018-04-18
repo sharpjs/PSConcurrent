@@ -14,10 +14,14 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using FluentAssertions;
+using FluentAssertions.Specialized;
 using NUnit.Framework;
 
 namespace PSConcurrent.Tests
@@ -43,10 +47,27 @@ namespace PSConcurrent.Tests
             _initialState.ImportPSModule(new[] { modulePath });
         }
 
-        protected ICollection<PSObject> Invoke(string script)
+        protected ICollection<PSObject> Invoke(
+            string         script,
+            Action<Action> expecting = null)
         {
+            if (expecting == null)
+                expecting = a => a.Should().NotThrow();
+
             using (var shell = PowerShell.Create(_initialState))
-                return shell.AddScript(script).Invoke();
+            {
+                var output = new List<PSObject>();
+
+                var action = shell
+                    .AddScript(script)
+                    .Invoking(s => s.Invoke(Empty, output));
+
+                expecting(action);
+
+                return output;
+            }
         }
+
+        private IEnumerable<PSObject> Empty = new PSObject[0];
     }
 }
