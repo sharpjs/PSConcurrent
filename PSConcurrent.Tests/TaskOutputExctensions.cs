@@ -20,7 +20,7 @@ using System.Management.Automation;
 
 namespace PSConcurrent
 {
-    internal static class PSObjectExctensions
+    internal static class TaskOutputExctensions
     {
         public static IEnumerable<object> OfTask(
             this IEnumerable<PSObject> source,
@@ -29,6 +29,14 @@ namespace PSConcurrent
             return source
                 .Select(o => o.BaseObject)
                 .OfType<TaskOutput>()
+                .OfTask(taskId);
+        }
+
+        public static IEnumerable<object> OfTask(
+            this IEnumerable<TaskOutput> source,
+            int                          taskId)
+        {
+            return source
                 .Where(o => o.TaskId == taskId)
                 .Select(o => o.Object);
         }
