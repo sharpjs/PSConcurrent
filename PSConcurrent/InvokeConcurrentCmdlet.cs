@@ -224,7 +224,13 @@ namespace PSConcurrent
                 Object = obj
             };
 
-            _mainThread.InvokeOnMainThread(() => WriteObject(output));
+            _mainThread.InvokeOnMainThread(() => WriteOutput(output));
+        }
+        
+        protected virtual void WriteOutput(TaskOutput output)
+        {
+            // This method makes WriteObject virtual to accommodate testing.
+            WriteObject(output);
         }
 
         private void HandleException(Exception e, int taskId, TaskHost host = null)
