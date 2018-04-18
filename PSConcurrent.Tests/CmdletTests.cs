@@ -45,24 +45,23 @@ namespace PSConcurrent.Tests
             _initialState.ImportPSModule(new[] { modulePath });
         }
 
-        protected ICollection<PSObject> Invoke(
-            string         script,
-            Action<Action> expecting = null)
+        protected (ICollection<PSObject>, Exception) Invoke(string script)
         {
-            if (expecting == null)
-                expecting = a => a.Should().NotThrow();
-
             using (var shell = PowerShell.Create(_initialState))
             {
-                var output = new List<PSObject>();
+                var output    = new List<PSObject>();
+                var exception = null as Exception;
 
-                var action = shell
-                    .AddScript(script)
-                    .Invoking(s => s.Invoke(null, output));
+                try
+                {
+                    shell.AddScript(script).Invoke(null, output);
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                }
 
-                expecting(action);
-
-                return output;
+                return (output, exception);
             }
         }
     }

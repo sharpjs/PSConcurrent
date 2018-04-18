@@ -32,60 +32,63 @@ namespace PSConcurrent.Tests
         [Test]
         public void One()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 @"Invoke-Concurrent {'a'}"
             );
 
             output.Should().HaveCount(1);
-
             output.OfTask(1).Should().Contain("a");
+
+            e.Should().BeNull();
         }
 
         [Test]
         public void Multiple()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 @"Invoke-Concurrent {'a'}, {'b'}, {'c'}"
             );
 
             output.Should().HaveCount(3);
-
             output.OfTask(1).Should().Contain("a");
             output.OfTask(2).Should().Contain("b");
             output.OfTask(3).Should().Contain("c");
+
+            e.Should().BeNull();
         }
 
         [Test]
         public void Multiple_LimitedConcurrency()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 @"Invoke-Concurrent {'a'}, {'b'}, {'c'} -MaxConcurrency 2"
             );
 
             output.Should().HaveCount(3);
-
             output.OfTask(1).Should().Contain("a");
             output.OfTask(2).Should().Contain("b");
             output.OfTask(3).Should().Contain("c");
+
+            e.Should().BeNull();
         }
 
         [Test]
         public void Multiple_LimitedConcurrency_Throwing()
         {
-            var output = Invoke(
-                @"Invoke-Concurrent {'a'}, {throw 'b'}, {'c'} -MaxConcurrency 1",
-                a => a.Should().Throw<CmdletInvocationException>()
+            var (output, e) = Invoke(
+                @"Invoke-Concurrent {'a'}, {throw 'b'}, {'c'} -MaxConcurrency 1"
             );
 
             output.Should().HaveCount(1);
-
             output.OfTask(1).Should().Contain("a");
+
+            e.Should().NotBeNull().And.BeAssignableTo<CmdletInvocationException>();
         }
 
         [Test]
         public void Variables()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 @"
                     $Foo = 'Foo'
                     $Bar = 'Bar'
@@ -98,16 +101,17 @@ namespace PSConcurrent.Tests
             );
 
             output.Should().HaveCount(2);
-
             output.OfTask(1).Should().BeEmpty();
             output.OfTask(2).Should().Contain("Foo");
             output.OfTask(3).Should().Contain("Bar");
+
+            e.Should().BeNull();
         }
 
         [Test]
         public void Modules()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 $@"
                     cd ""{TestContext.CurrentContext.TestDirectory}""
                     Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
@@ -119,40 +123,44 @@ namespace PSConcurrent.Tests
             );
 
             output.Should().HaveCount(2);
-
             output.OfTask(1).Should().Contain("TestModuleA Output");
             output.OfTask(2).Should().Contain("TestModuleB Output");
+
+            e.Should().BeNull();
         }
 
         [Test]
         public void TaskIdVariable()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 @"Invoke-Concurrent {$TaskId}, {$TaskId}, {$TaskId}"
             );
 
             output.Should().HaveCount(3);
-
             output.OfTask(1).Should().Contain(1);
             output.OfTask(2).Should().Contain(2);
             output.OfTask(3).Should().Contain(3);
+
+            e.Should().BeNull();
         }
 
         [Test]
         public void ErrorActionPreferenceVariable()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 @"Invoke-Concurrent {$ErrorActionPreference}"
             );
 
             output.Should().HaveCount(1);
             output.OfTask(1).Single().Should().Be("Stop");
+
+            e.Should().BeNull();
         }
 
         [Test]
         public void CancellationTokenVariable()
         {
-            var output = Invoke(
+            var (output, e) = Invoke(
                 @"Invoke-Concurrent {$CancellationToken}"
             );
 
@@ -160,6 +168,8 @@ namespace PSConcurrent.Tests
             output.OfTask(1).Single()
                 .Should().BeAssignableTo<CancellationToken>()
                 .And.NotBe(default(CancellationToken));
+
+            e.Should().BeNull();
         }
 
         [Test]
