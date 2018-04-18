@@ -51,6 +51,20 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
+        public void Multiple_LimitedConcurrency()
+        {
+            var output = Invoke(
+                @"Invoke-Concurrent {'a'}, {'b'}, {'c'} -MaxConcurrency 2"
+            );
+
+            output.Should().HaveCount(3);
+
+            output.OfTask(1).Should().Contain("a");
+            output.OfTask(2).Should().Contain("b");
+            output.OfTask(3).Should().Contain("c");
+        }
+
+        [Test]
         public void Multiple_LimitedConcurrency_Throwing()
         {
             var output = Invoke(
