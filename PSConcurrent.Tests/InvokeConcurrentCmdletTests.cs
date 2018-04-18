@@ -25,11 +25,11 @@ namespace PSConcurrent.Tests
     public class InvokeConcurrentCmdletTests : CmdletTests
     {
         [Test]
-        public void OneScriptWithOutput()
+        public void One()
         {
-            var output = Invoke(@"
-                Invoke-Concurrent {'a'}
-            ");
+            var output = Invoke(
+                @"Invoke-Concurrent {'a'}"
+            );
 
             output.Should().HaveCount(1);
 
@@ -37,11 +37,11 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void MultiScriptWithOutput()
+        public void Multiple()
         {
-            var output = Invoke(@"
-                Invoke-Concurrent {'a'}, {'b'}, {'c'}
-            ");
+            var output = Invoke(
+                @"Invoke-Concurrent {'a'}, {'b'}, {'c'}"
+            );
 
             output.Should().HaveCount(3);
 
