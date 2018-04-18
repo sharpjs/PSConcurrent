@@ -47,13 +47,6 @@ param (
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$PullRequestRegex = [regex] '(?nx)
-    ^
-    ( pull/ )?
-    (?<Number> [1-9][0-9]* )
-    $
-'
-
 # SemVer 1.0 + restriction that tag parts must start with alpha char
 # https://semver.org/spec/v1.0.0.html
 $VersionRegex = [regex] '(?nx)
