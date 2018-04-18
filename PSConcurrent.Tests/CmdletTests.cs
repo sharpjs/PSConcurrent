@@ -58,14 +58,12 @@ namespace PSConcurrent.Tests
 
                 var action = shell
                     .AddScript(script)
-                    .Invoking(s => s.Invoke(Empty, output));
+                    .Invoking(s => s.Invoke(null, output));
 
                 expecting(action);
 
                 return output;
             }
         }
-
-        private IEnumerable<PSObject> Empty = new PSObject[0];
     }
 }
