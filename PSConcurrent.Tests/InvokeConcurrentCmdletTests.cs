@@ -51,17 +51,16 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void Throws()
+        public void Multiple_LimitedConcurrency_Throwing()
         {
-            @"
-                Invoke-Concurrent {'a'}, {throw 'b'}, {'c'} -MaxConcurrency 1
-            "
-            .Invoking(s => Invoke(s))
-            .Should().Throw<CmdletInvocationException>();
+            var output = Invoke(
+                @"Invoke-Concurrent {'a'}, {throw 'b'}, {'c'} -MaxConcurrency 1",
+                a => a.Should().Throw<CmdletInvocationException>()
+            );
 
-            // TODO: Somehow test this too
-            //output.Should().HaveCount(1);
-            //output.OfTask(1).Should().Contain("a");
+            output.Should().HaveCount(1);
+
+            output.OfTask(1).Should().Contain("a");
         }
     }
 }
