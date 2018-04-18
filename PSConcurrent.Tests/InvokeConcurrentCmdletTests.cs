@@ -123,6 +123,88 @@ namespace PSConcurrent.Tests
             output.OfTask(2).Should().Contain("TestModuleB Output");
         }
 
+        [Test]
+        public void StopBeforeFirstRecord()
+        {
+            var cmdlet = new InvokeConcurrentCmdletHarness();
+
+            Mock.Get(cmdlet.CommandRuntime)
+                .Setup(r => r.Host.UI.WriteWarningLine("Canceling..."))
+                .Verifiable();
+
+            cmdlet.BeginProcessing();
+
+            cmdlet.StopProcessing();
+
+            cmdlet.ScriptBlock = new[] { ScriptBlock.Create("'a'") };
+            cmdlet.ProcessRecord();
+
+            cmdlet.EndProcessing();
+
+            cmdlet.Output.Should().BeEmpty();
+
+            Mock.Get(cmdlet.CommandRuntime).Verify();
+        }
+
+        [Test]
+        public void StopBetweenRecords()
+        {
+            var cmdlet = new InvokeConcurrentCmdletHarness();
+
+            Mock.Get(cmdlet.CommandRuntime)
+                .Setup(r => r.Host.UI.WriteWarningLine("Canceling..."))
+                .Verifiable();
+
+            cmdlet.BeginProcessing();
+
+            cmdlet.ScriptBlock = new[] { ScriptBlock.Create("'a'") };
+            cmdlet.ProcessRecord();
+
+            Thread.Sleep(1.Seconds()); // allow task to proceed
+
+            cmdlet.StopProcessing();
+
+            cmdlet.ScriptBlock = new[] { ScriptBlock.Create("'b'") };
+            cmdlet.ProcessRecord();
+
+            cmdlet.EndProcessing();
+
+            cmdlet.Output.Should().HaveCount(1);
+            cmdlet.Output.OfTask(1).Should().Contain("a");
+
+            Mock.Get(cmdlet.CommandRuntime).Verify();
+        }
+
+        [Test]
+        public void StopAfterLastRecord()
+        {
+            var cmdlet = new InvokeConcurrentCmdletHarness();
+
+            Mock.Get(cmdlet.CommandRuntime)
+                .Setup(r => r.Host.UI.WriteWarningLine("Canceling..."))
+                .Verifiable();
+
+            cmdlet.BeginProcessing();
+
+            cmdlet.ScriptBlock = new[] { ScriptBlock.Create("'a'") };
+            cmdlet.ProcessRecord();
+            Thread.Sleep(1.Seconds()); // allow task to proceed
+
+            cmdlet.ScriptBlock = new[] { ScriptBlock.Create("'b'") };
+            cmdlet.ProcessRecord();
+            Thread.Sleep(1.Seconds()); // allow task to proceed
+
+            cmdlet.StopProcessing();
+
+            cmdlet.EndProcessing();
+
+            cmdlet.Output.Should().HaveCount(2);
+            cmdlet.Output.OfTask(1).Should().Contain("a");
+            cmdlet.Output.OfTask(2).Should().Contain("b");
+
+            Mock.Get(cmdlet.CommandRuntime).Verify();
+        }
+
         private class InvokeConcurrentCmdletHarness : InvokeConcurrentCmdlet
         {
             public InvokeConcurrentCmdletHarness()
