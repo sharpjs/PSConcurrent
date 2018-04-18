@@ -221,7 +221,7 @@ namespace PSConcurrent
             var output = new TaskOutput
             {
                 TaskId = taskId,
-                Object = obj
+                Object = (PSObject) obj
             };
 
             _mainThread.InvokeOnMainThread(() => WriteOutput(output));

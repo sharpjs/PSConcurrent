@@ -14,6 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+using System.Management.Automation;
+
 namespace PSConcurrent
 {
     /// <summary>
@@ -29,6 +31,6 @@ namespace PSConcurrent
         /// <summary>
         ///   The output object produced by the task.
         /// </summary>
-        public object Object { get; set; }
+        public PSObject Object { get; set; }
     }
 }
