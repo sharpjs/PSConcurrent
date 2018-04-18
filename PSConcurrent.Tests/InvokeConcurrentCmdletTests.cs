@@ -15,8 +15,12 @@
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Management.Automation;
+using System.Threading;
 using FluentAssertions;
+using FluentAssertions.Extensions;
+using Moq;
 using NUnit.Framework;
 
 namespace PSConcurrent.Tests
@@ -117,6 +121,25 @@ namespace PSConcurrent.Tests
 
             output.OfTask(1).Should().Contain("TestModuleA Output");
             output.OfTask(2).Should().Contain("TestModuleB Output");
+        }
+
+        private class InvokeConcurrentCmdletHarness : InvokeConcurrentCmdlet
+        {
+            public InvokeConcurrentCmdletHarness()
+            {
+                CommandRuntime = Mock.Of<ICommandRuntime>();
+                Output         = new ConcurrentQueue<TaskOutput>();
+            }
+
+            public ConcurrentQueue<TaskOutput> Output { get; }
+
+            public new void BeginProcessing() => base.BeginProcessing();
+            public new void ProcessRecord()   => base.ProcessRecord();
+            public new void EndProcessing()   => base.EndProcessing();
+            public new void StopProcessing()  => base.StopProcessing();
+
+            protected override void WriteOutput(TaskOutput output)
+                => Output.Enqueue(output);
         }
     }
 }
