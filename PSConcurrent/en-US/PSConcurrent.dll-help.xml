@@ -65,7 +65,7 @@
         <dev:defaultValue>None</dev:defaultValue>
         <dev:type>ScriptBlock[]</dev:type>
       </command:parameter>
-      <command:parameter required="false" position="named" pipelineInput="true (ByPropertyName)" globbing="false">
+      <command:parameter required="false" position="named" pipelineInput="false" globbing="false">
         <maml:name>MaxConcurrency</maml:name>
         <maml:description>
           <maml:para>The maximum number of simultaneously running script blocks.  The default is the number of processor threads on the current computer.</maml:para>

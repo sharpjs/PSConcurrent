@@ -62,7 +62,7 @@ namespace PSConcurrent
         [AllowEmptyCollection]
         public ScriptBlock[] ScriptBlock { get; set; }
 
-        [Parameter(ValueFromPipelineByPropertyName = true)]
+        [Parameter()]
         [ValidateRange(1, int.MaxValue)]
         public int? MaxConcurrency { get; set; }
 
