@@ -729,7 +729,5 @@ namespace PSConcurrent.Tests
             protected override void WriteOutput(TaskOutput output)
                 => Output.Enqueue(output);
         }
-
-        private static object[] Objects(params object[] args) => args;
     }
 }
