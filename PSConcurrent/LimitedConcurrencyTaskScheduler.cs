@@ -116,6 +116,10 @@ namespace PSConcurrent
             return _queue.Select(e => e.Task).Where(t => t != null).ToList();
         }
 
+        // Test point
+        internal IEnumerable<Task> GetScheduledTasksInternal()
+            => GetScheduledTasks();
+
         /// <inheritdoc/>
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {

@@ -103,6 +103,7 @@ namespace PSConcurrent.Tests
             foreach (var task in tasks)
                 task.Start(scheduler);
 
+            scheduler.GetScheduledTasksInternal().Should().BeEquivalentTo(tasks);
             scheduler.CurrentConcurrencyLevel.Should().Be(scheduler.MaximumConcurrencyLevel);
 
             Task.WaitAll(tasks);
