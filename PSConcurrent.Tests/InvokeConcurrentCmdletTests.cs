@@ -456,13 +456,13 @@ namespace PSConcurrent.Tests
             e.Should().BeNull();
         }
 
-        [Test, Ignore("Fails; WIP")]
+        [Test]
         public void ModuleProperty_PipelinedObject()
         {
             var (output, e) = Invoke(@"
                 Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
                 [PSCustomObject] @{
-                    ScriptBlock = {Invoke-TestModuleA; Invoke-TestModuleB},
+                    ScriptBlock = {Invoke-TestModuleA; Invoke-TestModuleB}
                     Module      = (gmo TestModuleA), (gmo TestModuleB)
                 },
                 [PSCustomObject] @{
