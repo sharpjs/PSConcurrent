@@ -356,20 +356,137 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void Modules()
+        public void AmbientModule_ArgumentBlock()
         {
-            var (output, e) = Invoke($@"
-                cd ""{TestContext.CurrentContext.TestDirectory}""
+            var (output, e) = Invoke(@"
+                Import-Module .\TestModuleA.psm1
+                Invoke-Concurrent {gmo Test-ModuleA}
+            ");
+
+            output.Should().HaveCount(0);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void AmbientModule_PipelinedBlock()
+        {
+            var (output, e) = Invoke(@"
+                Import-Module .\TestModuleA.psm1
+                {gmo Test-ModuleA} | Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(0);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void AmbientModule_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                Import-Module .\TestModuleA.psm1
+                [PSCustomObject] @{
+                    ScriptBlock = {gmo Test-ModuleA}
+                } |
+                Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(0);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ModuleArgument_ArgumentBlock()
+        {
+            var (output, e) = Invoke(@"
                 Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
-                Invoke-Concurrent `
-                    {{ Invoke-TestModuleA }},
-                    {{ Invoke-TestModuleB }} `
-                    -Module (Get-Module TestModuleA), (Get-Module TestModuleB)
+                Invoke-Concurrent {Invoke-TestModuleA; Invoke-TestModuleB} `
+                    -Module (gmo TestModuleA), (gmo TestModuleB)
             ");
 
             output.Should().HaveCount(2);
-            output.OfTask(1).Should().BeObjects("TestModuleA Output");
-            output.OfTask(2).Should().BeObjects("TestModuleB Output");
+            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ModuleArgument_PipelinedBlock()
+        {
+            var (output, e) = Invoke(@"
+                Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
+                {Invoke-TestModuleA; Invoke-TestModuleB} `
+                    | Invoke-Concurrent -Module (gmo TestModuleA), (gmo TestModuleB)
+            ");
+
+            output.Should().HaveCount(2);
+            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ModuleArgument_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
+                [PSCustomObject] @{
+                    ScriptBlock = {Invoke-TestModuleA; Invoke-TestModuleB}
+                },
+                [PSCustomObject] @{
+                    ScriptBlock = {Invoke-TestModuleA}, {Invoke-TestModuleB}
+                } |
+                Invoke-Concurrent -Module (gmo TestModuleA), (gmo TestModuleB)
+            ");
+
+            output.Should().HaveCount(4);
+            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
+            output.OfTask(2).Should().BeObjects("TestModuleA Output");
+            output.OfTask(3).Should().BeObjects("TestModuleB Output");
+
+            e.Should().BeNull();
+        }
+
+        [Test, Ignore("Fails; WIP")]
+        public void ModuleProperty_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
+                [PSCustomObject] @{
+                    ScriptBlock = {Invoke-TestModuleA; Invoke-TestModuleB},
+                    Module      = (gmo TestModuleA), (gmo TestModuleB)
+                },
+                [PSCustomObject] @{
+                    ScriptBlock = {Invoke-TestModuleA}, {Invoke-TestModuleB}
+                    Module      = (gmo TestModuleA), (gmo TestModuleB)
+                } |
+                Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(4);
+            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
+            output.OfTask(2).Should().BeObjects("TestModuleA Output");
+            output.OfTask(3).Should().BeObjects("TestModuleB Output");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ModuleArgumentAndProperty_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
+                [PSCustomObject] @{
+                    ScriptBlock = {gmo TestModuleA; Invoke-TestModuleB}
+                    Module      = (gmo TestModuleA)
+                } |
+                Invoke-Concurrent -Module (gmo TestModuleB)
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeObjects("TestModuleB Output");
 
             e.Should().BeNull();
         }
