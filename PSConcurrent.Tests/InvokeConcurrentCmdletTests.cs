@@ -30,80 +30,327 @@ namespace PSConcurrent.Tests
     public class InvokeConcurrentCmdletTests : CmdletTests
     {
         [Test]
-        public void One()
+        public void One_Argument()
         {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent {'a'}"
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {'a'}
+            ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().Contain("a");
+            output.OfTask(1).Should().BeObjects("a");
 
             e.Should().BeNull();
         }
 
         [Test]
-        public void Multiple()
+        public void One_PipelinedValue()
         {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent {'a'}, {'b'}, {'c'}"
-            );
-
-            output.Should().HaveCount(3);
-            output.OfTask(1).Should().Contain("a");
-            output.OfTask(2).Should().Contain("b");
-            output.OfTask(3).Should().Contain("c");
-
-            e.Should().BeNull();
-        }
-
-        [Test]
-        public void Multiple_LimitedConcurrency()
-        {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent {'a'}, {'b'}, {'c'} -MaxConcurrency 2"
-            );
-
-            output.Should().HaveCount(3);
-            output.OfTask(1).Should().Contain("a");
-            output.OfTask(2).Should().Contain("b");
-            output.OfTask(3).Should().Contain("c");
-
-            e.Should().BeNull();
-        }
-
-        [Test]
-        public void Multiple_LimitedConcurrency_Throwing()
-        {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent {'a'}, {throw 'b'}, {'c'} -MaxConcurrency 1"
-            );
+            var (output, e) = Invoke(@"
+                {'a'} | Invoke-Concurrent
+            ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().Contain("a");
+            output.OfTask(1).Should().BeObjects("a");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void One_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                [PSCustomObject] @{ ScriptBlock = {'a'} } | Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeObjects("a");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void Multiple_Argument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {'a'}, {'b'}, {'c'}
+            ");
+
+            output.Should().HaveCount(3);
+            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(2).Should().BeObjects("b");
+            output.OfTask(3).Should().BeObjects("c");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void Multiple_PipelinedValue()
+        {
+            var (output, e) = Invoke(@"
+                {'a'}, {'b'}, {'c'} | Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(3);
+            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(2).Should().BeObjects("b");
+            output.OfTask(3).Should().BeObjects("c");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void Multiple_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                [PSCustomObject] @{ ScriptBlock = {'a'} },
+                [PSCustomObject] @{ ScriptBlock = {'b'} },
+                [PSCustomObject] @{ ScriptBlock = {'c'} } |
+                Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(3);
+            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(2).Should().BeObjects("b");
+            output.OfTask(3).Should().BeObjects("c");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void LimitedConcurrency_Argument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {'a'}, {'b'}, {'c'} -MaxConcurrency 2
+            ");
+
+            output.Should().HaveCount(3);
+            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(2).Should().BeObjects("b");
+            output.OfTask(3).Should().BeObjects("c");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void LimitedConcurrency_PipelinedValue()
+        {
+            var (output, e) = Invoke(@"
+                {'a'}, {'b'}, {'c'} | Invoke-Concurrent -MaxConcurrency 2
+            ");
+
+            output.Should().HaveCount(3);
+            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(2).Should().BeObjects("b");
+            output.OfTask(3).Should().BeObjects("c");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void LimitedConcurrency_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                [PSCustomObject] @{ ScriptBlock = {'a'} },
+                [PSCustomObject] @{ ScriptBlock = {'b'} },
+                [PSCustomObject] @{ ScriptBlock = {'c'} } |
+                Invoke-Concurrent -MaxConcurrency 2
+            ");
+
+            output.Should().HaveCount(3);
+            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(2).Should().BeObjects("b");
+            output.OfTask(3).Should().BeObjects("c");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void LimitedConcurrency_Throwing()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {'a'}, {throw 'b'}, {'c'} -MaxConcurrency 1
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeObjects("a");
 
             e.Should().NotBeNull().And.BeAssignableTo<RuntimeException>();
         }
 
         [Test]
-        public void Variables()
+        public void AmbientVariable_ArgumentBlock()
         {
-            var (output, e) = Invoke(
-                @"
-                    $Foo = 'Foo'
-                    $Bar = 'Bar'
-                    Invoke-Concurrent `
-                        { $Foo = 'Wrong Foo'; $Bar = 'Wrong Bar' },
-                        { Start-Sleep -Milliseconds 50; $Foo },
-                        { Start-Sleep -Milliseconds 50; $Bar } `
-                        -Variable (Get-Variable Foo), (Get-Variable Bar)
-                "
-            );
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'
+                Invoke-Concurrent {$Foo}
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeObjects(null as object);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void AmbientVariable_PipelinedBlock()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'
+                {$Foo} | Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeObjects(null as object);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void AmbientVariable_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'
+                [PSCustomObject] @{ ScriptBlock = {$Foo} } | Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeObjects(null as object);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ArgumentVariable_ArgumentBlock()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'; $Bar = 'Bar'
+                Invoke-Concurrent {$Foo; $Bar} -Variable (gv Foo), (gv Bar)
+            ");
 
             output.Should().HaveCount(2);
+            output.OfTask(1).Should().BeObjects("Foo", "Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ArgumentVariable_PipelinedBlock()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'; $Bar = 'Bar'
+                {$Foo; $Bar} | Invoke-Concurrent -Variable (gv Foo), (gv Bar)
+            ");
+
+            output.Should().HaveCount(2);
+            output.OfTask(1).Should().BeObjects("Foo", "Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ArgumentVariable_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'; $Bar = 'Bar'
+                [PSCustomObject] @{
+                    ScriptBlock = {$Foo; $Bar}, {$Foo}, {$Bar}
+                } |
+                Invoke-Concurrent -Variable (gv Foo), (gv Bar)
+            ");
+
+            output.Should().HaveCount(4);
+            output.OfTask(1).Should().BeObjects("Foo", "Bar");
+            output.OfTask(2).Should().BeObjects("Foo");
+            output.OfTask(3).Should().BeObjects("Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void PipelineVariable_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'; $Bar = 'Bar'
+                [PSCustomObject] @{
+                    ScriptBlock = {$Foo; $Bar}, {$Foo}, {$Bar}
+                    Variable    = (gv Foo), (gv Bar)
+                } |
+                Invoke-Concurrent
+            ");
+
+            output.Should().HaveCount(4);
+            output.OfTask(1).Should().BeObjects("Foo", "Bar");
+            output.OfTask(2).Should().BeObjects("Foo");
+            output.OfTask(3).Should().BeObjects("Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ArgumentAndPipelineVariable_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'; $Bar = 'Bar'
+                [PSCustomObject] @{
+                    ScriptBlock = {$Foo; $Bar}
+                    Variable    = (gv Foo)
+                } |
+                Invoke-Concurrent -Variable (gv Bar)
+            ");
+
+            output.Should().HaveCount(2);
+            output.OfTask(1).Should().BeObjects(null, "Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void VariableIsolation_ArgumentBlock()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'
+                Invoke-Concurrent {$Foo = 'Wrong'}, {$Foo} `
+                    -Variable (gv Foo) -MaxConcurrency 1
+            ");
+
+            output.Should().HaveCount(1);
             output.OfTask(1).Should().BeEmpty();
-            output.OfTask(2).Should().Contain("Foo");
-            output.OfTask(3).Should().Contain("Bar");
+            output.OfTask(2).Should().BeObjects("Foo");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void VariableIsolation_PipelinedBlock()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'
+                {$Foo = 'Bad'}, {$Foo} |
+                Invoke-Concurrent -Variable (gv Foo) -MaxConcurrency 1
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeEmpty();
+            output.OfTask(2).Should().BeObjects("Foo");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void VariableIsolation_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                $Foo = 'Foo'
+                [PSCustomObject] @{
+                    ScriptBlock = {$Foo = 'Bad'}, {$Foo}
+                    Variable    = (gv Foo)
+                } |
+                Invoke-Concurrent -MaxConcurrency 1
+            ");
+
+            output.Should().HaveCount(1);
+            output.OfTask(1).Should().BeEmpty();
+            output.OfTask(2).Should().BeObjects("Foo");
 
             e.Should().BeNull();
         }
@@ -111,20 +358,18 @@ namespace PSConcurrent.Tests
         [Test]
         public void Modules()
         {
-            var (output, e) = Invoke(
-                $@"
-                    cd ""{TestContext.CurrentContext.TestDirectory}""
-                    Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
-                    Invoke-Concurrent `
-                        {{ Invoke-TestModuleA }},
-                        {{ Invoke-TestModuleB }} `
-                        -Module (Get-Module TestModuleA), (Get-Module TestModuleB)
-                "
-            );
+            var (output, e) = Invoke($@"
+                cd ""{TestContext.CurrentContext.TestDirectory}""
+                Import-Module .\TestModuleA.psm1, .\TestModuleB.psm1
+                Invoke-Concurrent `
+                    {{ Invoke-TestModuleA }},
+                    {{ Invoke-TestModuleB }} `
+                    -Module (Get-Module TestModuleA), (Get-Module TestModuleB)
+            ");
 
             output.Should().HaveCount(2);
-            output.OfTask(1).Should().Contain("TestModuleA Output");
-            output.OfTask(2).Should().Contain("TestModuleB Output");
+            output.OfTask(1).Should().BeObjects("TestModuleA Output");
+            output.OfTask(2).Should().BeObjects("TestModuleB Output");
 
             e.Should().BeNull();
         }
@@ -132,14 +377,14 @@ namespace PSConcurrent.Tests
         [Test]
         public void TaskIdVariable()
         {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent {$TaskId}, {$TaskId}, {$TaskId}"
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {$TaskId}, {$TaskId}, {$TaskId}
+            ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().Contain(1);
-            output.OfTask(2).Should().Contain(2);
-            output.OfTask(3).Should().Contain(3);
+            output.OfTask(1).Should().BeObjects(1);
+            output.OfTask(2).Should().BeObjects(2);
+            output.OfTask(3).Should().BeObjects(3);
 
             e.Should().BeNull();
         }
@@ -147,12 +392,12 @@ namespace PSConcurrent.Tests
         [Test]
         public void ErrorActionPreferenceVariable()
         {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent {$ErrorActionPreference}"
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {$ErrorActionPreference}
+            ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Single().Should().Be("Stop");
+            output.OfTask(1).Should().BeObjects("Stop");
 
             e.Should().BeNull();
         }
@@ -160,9 +405,9 @@ namespace PSConcurrent.Tests
         [Test]
         public void CancellationTokenVariable()
         {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent {$CancellationToken}"
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {$CancellationToken}
+            ");
 
             output.Should().HaveCount(1);
             output.OfTask(1).Single()
@@ -175,9 +420,9 @@ namespace PSConcurrent.Tests
         [Test]
         public void SingleException()
         {
-            var (output, e) = Invoke(
-                @"Invoke-Concurrent { throw [InvalidOperationException] 'Oops' }"
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent { throw [InvalidOperationException] 'Oops' }
+            ");
 
             output.Should().BeEmpty();
 
@@ -188,13 +433,11 @@ namespace PSConcurrent.Tests
         [Test]
         public void MultiException()
         {
-            var (output, e) = Invoke(
-                @"
-                    Invoke-Concurrent `
-                        { sleep -m 100; throw [InvalidOperationException] 'Oops A' },
-                        { sleep -m 100; throw [InvalidOperationException] 'Oops B' }
-                "
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent `
+                    { sleep -m 100; throw [InvalidOperationException] 'Oops A' },
+                    { sleep -m 100; throw [InvalidOperationException] 'Oops B' }
+            ");
 
             output.Should().BeEmpty();
 
@@ -209,15 +452,13 @@ namespace PSConcurrent.Tests
         [Test]
         public void NestedSingleException()
         {
-            var (output, e) = Invoke(
-                @"
-                    Invoke-Concurrent {
-                        throw [AggregateException]::new(
-                            [InvalidOperationException] 'Oops A'
-                        )
-                    }
-                "
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {
+                    throw [AggregateException]::new(
+                        [InvalidOperationException] 'Oops A'
+                    )
+                }
+            ");
 
             output.Should().BeEmpty();
 
@@ -228,16 +469,14 @@ namespace PSConcurrent.Tests
         [Test]
         public void NestedMultiException()
         {
-            var (output, e) = Invoke(
-                @"
-                    Invoke-Concurrent {
-                        throw [AggregateException]::new(
-                            [InvalidOperationException] 'Oops A',
-                            [InvalidOperationException] 'Oops B'
-                        )
-                    }
-                "
-            );
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {
+                    throw [AggregateException]::new(
+                        [InvalidOperationException] 'Oops A',
+                        [InvalidOperationException] 'Oops B'
+                    )
+                }
+            ");
 
             output.Should().BeEmpty();
 
@@ -252,18 +491,16 @@ namespace PSConcurrent.Tests
         [Test]
         public void NestedJaggedException()
         {
-            var (output, e) = Invoke(
-                @"
-                    Invoke-Concurrent {
-                        throw [AggregateException]::new(
-                            [InvalidOperationException] 'Oops A',
-                            [AggregateException]::new(
-                                [InvalidOperationException] 'Oops B'
-                            )
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent {
+                    throw [AggregateException]::new(
+                        [InvalidOperationException] 'Oops A',
+                        [AggregateException]::new(
+                            [InvalidOperationException] 'Oops B'
                         )
-                    }
-                "
-            );
+                    )
+                }
+            ");
 
             output.Should().BeEmpty();
 
@@ -375,5 +612,7 @@ namespace PSConcurrent.Tests
             protected override void WriteOutput(TaskOutput output)
                 => Output.Enqueue(output);
         }
+
+        private static object[] Objects(params object[] args) => args;
     }
 }
