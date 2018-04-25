@@ -27,6 +27,7 @@ namespace PSConcurrent.Tests
     public class CmdletTests
     {
         private InitialSessionState _initialState;
+        private string              _scriptPreamble;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -37,16 +38,20 @@ namespace PSConcurrent.Tests
                 "ErrorActionPreference", "Stop", null
             ));
 
-            var modulePath = Path.Combine(
-                TestContext.CurrentContext.TestDirectory,
-                "PSConcurrent.psd1"
-            );
+            var testPath   = TestContext.CurrentContext.TestDirectory;
+            var modulePath = Path.Combine(testPath, "PSConcurrent.psd1");
 
             _initialState.ImportPSModule(new[] { modulePath });
+
+            _scriptPreamble = $@"
+                cd ""{testPath.EscapeForDoubleQuoteString()}""
+            ";
         }
 
         protected (ICollection<PSObject>, Exception) Invoke(string script)
         {
+            script = _scriptPreamble + script;
+
             using (var shell = PowerShell.Create(_initialState))
             {
                 var output    = new List<PSObject>();
