@@ -30,7 +30,7 @@ namespace PSConcurrent.Tests
     public class InvokeConcurrentCmdletTests : CmdletTests
     {
         [Test]
-        public void One_Argument()
+        public void One_ArgumentBlock()
         {
             var (output, e) = Invoke(@"
                 Invoke-Concurrent {'a'}
@@ -43,7 +43,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void One_PipelinedValue()
+        public void One_PipelinedBlock()
         {
             var (output, e) = Invoke(@"
                 {'a'} | Invoke-Concurrent
@@ -69,7 +69,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void Multiple_Argument()
+        public void Multiple_ArgumentBlock()
         {
             var (output, e) = Invoke(@"
                 Invoke-Concurrent {'a'}, {'b'}, {'c'}
@@ -84,7 +84,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void Multiple_PipelinedValue()
+        public void Multiple_PipelinedBlock()
         {
             var (output, e) = Invoke(@"
                 {'a'}, {'b'}, {'c'} | Invoke-Concurrent
@@ -104,8 +104,8 @@ namespace PSConcurrent.Tests
             var (output, e) = Invoke(@"
                 [PSCustomObject] @{ ScriptBlock = {'a'} },
                 [PSCustomObject] @{ ScriptBlock = {'b'} },
-                [PSCustomObject] @{ ScriptBlock = {'c'} } |
-                Invoke-Concurrent
+                [PSCustomObject] @{ ScriptBlock = {'c'} } `
+                | Invoke-Concurrent
             ");
 
             output.Should().HaveCount(3);
@@ -117,7 +117,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void LimitedConcurrency_Argument()
+        public void LimitedConcurrency_ArgumentBlock()
         {
             var (output, e) = Invoke(@"
                 Invoke-Concurrent {'a'}, {'b'}, {'c'} -MaxConcurrency 2
@@ -132,7 +132,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void LimitedConcurrency_PipelinedValue()
+        public void LimitedConcurrency_PipelinedBlock()
         {
             var (output, e) = Invoke(@"
                 {'a'}, {'b'}, {'c'} | Invoke-Concurrent -MaxConcurrency 2
@@ -152,8 +152,8 @@ namespace PSConcurrent.Tests
             var (output, e) = Invoke(@"
                 [PSCustomObject] @{ ScriptBlock = {'a'} },
                 [PSCustomObject] @{ ScriptBlock = {'b'} },
-                [PSCustomObject] @{ ScriptBlock = {'c'} } |
-                Invoke-Concurrent -MaxConcurrency 2
+                [PSCustomObject] @{ ScriptBlock = {'c'} } `
+                | Invoke-Concurrent -MaxConcurrency 2
             ");
 
             output.Should().HaveCount(3);
@@ -220,7 +220,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void ArgumentVariable_ArgumentBlock()
+        public void VariableArgument_ArgumentBlock()
         {
             var (output, e) = Invoke(@"
                 $Foo = 'Foo'; $Bar = 'Bar'
@@ -234,7 +234,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void ArgumentVariable_PipelinedBlock()
+        public void VariableArgument_PipelinedBlock()
         {
             var (output, e) = Invoke(@"
                 $Foo = 'Foo'; $Bar = 'Bar'
@@ -248,12 +248,15 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void ArgumentVariable_PipelinedObject()
+        public void VariableArgument_PipelinedObject()
         {
             var (output, e) = Invoke(@"
                 $Foo = 'Foo'; $Bar = 'Bar'
                 [PSCustomObject] @{
-                    ScriptBlock = {$Foo; $Bar}, {$Foo}, {$Bar}
+                    ScriptBlock = {$Foo; $Bar}
+                },
+                [PSCustomObject] @{
+                    ScriptBlock = {$Foo}, {$Bar}
                 } |
                 Invoke-Concurrent -Variable (gv Foo), (gv Bar)
             ");
@@ -267,12 +270,16 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void PipelineVariable_PipelinedObject()
+        public void VariableProperty_PipelinedObject()
         {
             var (output, e) = Invoke(@"
                 $Foo = 'Foo'; $Bar = 'Bar'
                 [PSCustomObject] @{
-                    ScriptBlock = {$Foo; $Bar}, {$Foo}, {$Bar}
+                    ScriptBlock = {$Foo; $Bar}
+                    Variable    = (gv Foo), (gv Bar)
+                },
+                [PSCustomObject] @{
+                    ScriptBlock = {$Foo}, {$Bar}
                     Variable    = (gv Foo), (gv Bar)
                 } |
                 Invoke-Concurrent
@@ -287,7 +294,7 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
-        public void ArgumentAndPipelineVariable_PipelinedObject()
+        public void VariableArgumentAndProperty_PipelinedObject()
         {
             var (output, e) = Invoke(@"
                 $Foo = 'Foo'; $Bar = 'Bar'
