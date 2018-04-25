@@ -20,7 +20,7 @@ using System.Management.Automation;
 
 namespace PSConcurrent
 {
-    internal static class TaskOutputExctensions
+    internal static class TaskOutputExtensions
     {
         public static IEnumerable<object> OfTask(
             this IEnumerable<PSObject> source,
