@@ -111,6 +111,9 @@ namespace PSConcurrent
         {
             foreach (var script in ScriptBlock)
             {
+                if (script == null)
+                    continue;
+
                 if (_cancellation.IsCancellationRequested)
                     return;
 
