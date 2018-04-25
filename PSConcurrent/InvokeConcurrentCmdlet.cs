@@ -118,9 +118,10 @@ namespace PSConcurrent
                     return;
 
                 var taskId = _tasks.Count + 1;
+                var work   = new TaskWork(script, Variable, Module);
 
                 _tasks.Add(_taskFactory.StartNew(
-                    () => TaskMain(script, taskId)
+                    () => TaskMain(taskId, work)
                 ));
             }
         }
@@ -145,13 +146,13 @@ namespace PSConcurrent
             _cancellation.Cancel();
         }
 
-        private void TaskMain(ScriptBlock script, int taskId)
+        private void TaskMain(int taskId, TaskWork work)
         {
             var host = new TaskHost(Host, _console, taskId);
             try
             {
                 host.UI.WriteLine("Starting");
-                RunScript(script, taskId, host);
+                RunScript(taskId, work, host);
             }
             catch (Exception e)
             {
@@ -164,9 +165,9 @@ namespace PSConcurrent
             }
         }
 
-        private void RunScript(ScriptBlock script, int taskId, TaskHost host)
+        private void RunScript(int taskId, TaskWork work, TaskHost host)
         {
-            var state = CreateInitialSessionState(taskId);
+            var state = CreateInitialSessionState(taskId, work);
 
             using (var runspace = RunspaceFactory.CreateRunspace(host, state))
             {
@@ -180,30 +181,28 @@ namespace PSConcurrent
                     output.DataAdding += (s, e) => HandleOutput(taskId, e.ItemAdded);
 
                     shell.Runspace = runspace;
-                    shell.AddScript(script.ToString()).Invoke(null, output);
+                    shell.AddScript(work.Script.ToString()).Invoke(null, output);
                 }
 
                 runspace.Close();
             }
         }
 
-        private InitialSessionState CreateInitialSessionState(int taskId)
+        private InitialSessionState CreateInitialSessionState(int taskId, TaskWork work)
         {
             var state = InitialSessionState.CreateDefault();
 
-            if (Module != null)
-                foreach (var module in Module)
-                    state.ImportPSModule(new[] { module.Path });
+            foreach (var module in work.Modules)
+                state.ImportPSModule(new[] { module.Path });
 
-            if (Variable != null)
-                foreach (var variable in Variable)
-                    state.Variables.Add(new SessionStateVariableEntry(
-                        variable.Name,
-                        variable.Value,
-                        variable.Description,
-                        variable.Options,
-                        variable.Attributes
-                    ));
+            foreach (var variable in work.Variables)
+                state.Variables.Add(new SessionStateVariableEntry(
+                    variable.Name,
+                    variable.Value,
+                    variable.Description,
+                    variable.Options,
+                    variable.Attributes
+                ));
 
             state.Variables.Add(new SessionStateVariableEntry(
                 "CancellationToken", _cancellation.Token, null
