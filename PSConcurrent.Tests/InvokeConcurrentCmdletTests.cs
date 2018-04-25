@@ -363,6 +363,55 @@ namespace PSConcurrent.Tests
         }
 
         [Test]
+        public void VariableReference_ArgumentBlock()
+        {
+            var (output, e) = Invoke(@"
+                $Bag = [System.Collections.Concurrent.ConcurrentBag[string]]::new()
+                Invoke-Concurrent {$Bag.Add('Foo')}, {$Bag.Add('Bar')} -Variable (gv Bag)
+                $Bag.ToArray()
+            ");
+
+            output.Should().HaveCount(2);
+            output.Select(o => o.BaseObject).Should().Contain("Foo").And.Contain("Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void VariableReference_PipelinedBlock()
+        {
+            var (output, e) = Invoke(@"
+                $Bag = [System.Collections.Concurrent.ConcurrentBag[string]]::new()
+                {$Bag.Add('Foo')}, {$Bag.Add('Bar')} | Invoke-Concurrent -Variable (gv Bag)
+                $Bag.ToArray()
+            ");
+
+            output.Should().HaveCount(2);
+            output.Select(o => o.BaseObject).Should().Contain("Foo").And.Contain("Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void VariableReference_PipelinedObject()
+        {
+            var (output, e) = Invoke(@"
+                $Bag = [System.Collections.Concurrent.ConcurrentBag[string]]::new()
+                [PSCustomObject] @{
+                    ScriptBlock = {$Bag.Add('Foo')}, {$Bag.Add('Bar')}
+                    Variable    = (gv Bag)
+                } `
+                | Invoke-Concurrent
+                $Bag.ToArray()
+            ");
+
+            output.Should().HaveCount(2);
+            output.Select(o => o.BaseObject).Should().Contain("Foo").And.Contain("Bar");
+
+            e.Should().BeNull();
+        }
+
+        [Test]
         public void AmbientModule_ArgumentBlock()
         {
             var (output, e) = Invoke(@"
