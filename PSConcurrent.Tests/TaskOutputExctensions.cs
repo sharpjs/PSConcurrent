@@ -38,7 +38,7 @@ namespace PSConcurrent
         {
             return source
                 .Where(o => o.TaskId == taskId)
-                .Select(o => o.Object.BaseObject);
+                .Select(o => o.Object?.BaseObject);
         }
     }
 }
