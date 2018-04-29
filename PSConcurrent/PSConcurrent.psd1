@@ -26,10 +26,10 @@
     Description = 'Provides the Invoke-Concurrent cmdlet, which can run a set of ScriptBlocks concurrently, up to a configurable maximum concurrency level.'
 
     # Requirements
-    PowerShellVersion      = '5.1'
-    CompatiblePSEditions   = @("Desktop")
-    DotNetFrameworkVersion = '4.5'  # Valid for Desktop edition only
-    CLRVersion             = '4.0'  # Valid for Desktop edition only
+    PowerShellVersion      = '5.0'
+    #CompatiblePSEditions  = @("Desktop")   # Added in PowerShell 5.1
+    DotNetFrameworkVersion = '4.5.2'        # Valid for Desktop edition only
+    CLRVersion             = '4.0'          # Valid for Desktop edition only
 
     # Exports
     # NOTE: Use empty arrays to indicate no exports.
