@@ -49,20 +49,17 @@ You can also pipe the script blocks to Invoke-Concurrent:
 ```
 
 When a script block writes content to the error, warning, information, verbose,
-or debug streams, or directly to the host, Invoke-Concurrent writes the
-content, but adds text to identify which "task" (script block) sent it.  Task
-numbers start at 1.
+or debug streams, or directly to the host, Invoke-Concurrent writes the content,
+but adds text to identify which "task" (script block) sent it.  When a script
+block writes an object to the output stream, Invoke-Concurrent wraps the object
+in a container whose `TaskId` property identifies the task that sent the object.
+Task ids start at 1.
 
-When a script block writes an object to the output stream, Invoke-Concurrent
-wraps the object in a container whose `TaskId` property identifies the task
-that sent the object.
-
-The script blocks run simultaneously at a level of concurrency determined by
-the [.NET managed thread pool](https://docs.microsoft.com/en-us/dotnet/standard/threading/the-managed-thread-pool)
-— usually, the number of virtual processors in the system.
-
-You can provide an explicit limit on the number of concurrently-running script
-blocks with the `-MaxConcurrency` parameter.
+The script blocks run simultaneously at a level of concurrency determined by the
+[.NET managed thread pool](https://docs.microsoft.com/en-us/dotnet/standard/threading/the-managed-thread-pool)
+— usually, the number of virtual processors in the system.  You can provide an
+explicit limit on the number of concurrently-running script blocks with the
+`-MaxConcurrency` parameter.
 
 ```powershell
 Invoke-Concurrent {echo a}, {echo b}, {echo c} -MaxConcurrency 2
@@ -84,7 +81,7 @@ TaskId Object
 
 By default, script blocks do not see variables and modules from the PowerShell
 session that runs Invoke-Concurrent.  To change that, you can export specific
-variables and modules with the `-Variable and `-Module` parameters.
+variables and modules with the `-Variable` and `-Module` parameters.
 
 ```powershell
 $A = "Hocus"
