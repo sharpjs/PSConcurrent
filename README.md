@@ -10,9 +10,15 @@ Available in the [PowerShell Gallery](https://www.powershellgallery.com/packages
 
 ## Installation
 
+* Ensure that you have PowerShell 5.0 or later
 * Ensure that you have the latest version of the
   [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/psget/get_psget_module)
   module.
+  ```powershell
+  Install-PackageProvider Nuget –Force
+  Install-Module –Name PowerShellGet –Force
+  Set-PSRepository PSGallery -InstallationPolicy Trusted # optional
+  ```
 * Run this command:
   ```powershell
   Install-Module -Name PSConcurrent
