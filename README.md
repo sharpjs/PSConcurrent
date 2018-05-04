@@ -6,7 +6,7 @@ Available in the [PowerShell Gallery](https://www.powershellgallery.com/packages
 
 ## Status
 
-**Release Candidate.**
+**Stable.**
 
 ## Installation
 
@@ -15,7 +15,7 @@ Available in the [PowerShell Gallery](https://www.powershellgallery.com/packages
   module.
 * Run this command:
   ```powershell
-  Install-Module -Name PSConcurrent -AllowPrerelease
+  Install-Module -Name PSConcurrent
   ```
 * Restart PowerShell.
 
