@@ -25,6 +25,11 @@ Available in the [PowerShell Gallery](https://www.powershellgallery.com/packages
   ```
 * Restart PowerShell.
 
+To update PSConcurrent, run this command:
+```powershell
+Update-Module -Name PSConcurrent
+```
+
 ## Usage
 
 ### Basics
