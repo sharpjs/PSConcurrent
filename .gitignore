@@ -15,6 +15,7 @@ bin/
 # Testing
 TestResults
 TestResult*.xml
+/coverage/
 
 # Temporary Files
 *.log
