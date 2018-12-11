@@ -17,7 +17,7 @@
     # Identity
     GUID          = 'e228c9f6-e66e-4168-a1ad-3556746d4f06'
     RootModule    = 'PSConcurrent.dll'
-    ModuleVersion = '1.0.0'
+    ModuleVersion = '1.0.1'
 
     # General
     Author      = 'Jeffrey Sharp'
