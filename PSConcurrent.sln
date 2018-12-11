@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{D834E32C
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		CHANGES.md = CHANGES.md
 		General.props = General.props
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
