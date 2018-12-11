@@ -19,6 +19,7 @@
   <PropertyGroup>
     <Product>PSConcurrent</Product>
     <Version>1.0.1-local</Version>
+    <VersionIsTagged>false</VersionIsTagged>
     <Authors>Jeffrey Sharp</Authors>
     <Copyright>Copyright 2018 Jeffrey Sharp</Copyright>
     <PackageLicenseUrl>https://github.com/sharpjs/PSConcurrent/blob/master/LICENSE.txt</PackageLicenseUrl>

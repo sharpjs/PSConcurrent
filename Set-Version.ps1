@@ -81,6 +81,7 @@ if ($Branch -match $VersionRegex) {
     # Branch name contains a version string (ex: a release scenario)
     $BranchVersion     = [version] $Matches.Version     # 1.2.3
     $BranchVersionFull = [string]  $Matches.VersionFull # 1.2.3-beta4
+    $VersionIsTagged   = "true"
 
     # Verify branch/code versions have equal numbers
     if ($BranchVersion -ne $Version) {
@@ -92,6 +93,8 @@ if ($Branch -match $VersionRegex) {
 }
 else {
     # Branch name is not a version string
+    $VersionIsTagged = "false"
+
     # Start with code version numbers (1.2.3)
     $VersionFull = $Version.ToString()
 
@@ -121,6 +124,7 @@ Set-Content Local.props -Encoding UTF8 -Value $(
     "  <PropertyGroup>"
     "    <Version>$VersionFull</Version>"
     "    <FileVersion>$Version.$Counter</FileVersion>"
+    "    <VersionIsTagged>$VersionIsTagged</VersionIsTagged>"
     "  </PropertyGroup>"
     ""
     "</Project>"
