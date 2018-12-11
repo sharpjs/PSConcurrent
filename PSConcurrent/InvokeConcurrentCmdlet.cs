@@ -24,6 +24,7 @@ using System.Management.Automation.Runspaces;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Sharp.Async;
 
 namespace PSConcurrent
 {
