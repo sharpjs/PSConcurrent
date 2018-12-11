@@ -21,7 +21,7 @@
 
   <PropertyGroup>
     <Description>Tests for PowerShell Invoke-Concurrent Cmdlet</Description>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
