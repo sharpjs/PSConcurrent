@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
@@ -28,6 +29,7 @@ namespace PSConcurrent
         private readonly Guid       _id;    // Host identifier (random)
         private readonly string     _name;  // Host name
 
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Avoids conflict.")]
         private static readonly Version _version
             = typeof(TaskHost).Assembly.GetName().Version;
 
