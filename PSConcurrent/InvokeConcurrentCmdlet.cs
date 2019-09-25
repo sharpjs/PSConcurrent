@@ -26,8 +26,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sharp.Async;
 
-#nullable disable
-
 namespace PSConcurrent
 {
     /// <summary>
@@ -43,8 +41,8 @@ namespace PSConcurrent
         private readonly ConcurrentBag<Exception> _exceptions;
         private readonly CancellationTokenSource  _cancellation;
 
-        private TaskFactory _taskFactory;
-        private int         _isDisposed;
+        private TaskFactory? _taskFactory;
+        private int          _isDisposed;
 
         public InvokeConcurrentCmdlet()
         {
@@ -63,7 +61,7 @@ namespace PSConcurrent
         )]
         [ValidateNotNull]
         [AllowEmptyCollection]
-        public ScriptBlock[] ScriptBlock { get; set; }
+        public ScriptBlock?[]? ScriptBlock { get; set; }
 
         [Parameter()]
         [ValidateRange(1, int.MaxValue)]
@@ -71,11 +69,11 @@ namespace PSConcurrent
 
         [Parameter(ValueFromPipelineByPropertyName = true)]
         [AllowEmptyCollection]
-        public PSVariable[] Variable { get; set; }
+        public PSVariable?[]? Variable { get; set; }
 
         [Parameter(ValueFromPipelineByPropertyName = true)]
         [AllowEmptyCollection]
-        public PSModuleInfo[] Module { get; set; }
+        public PSModuleInfo?[]? Module { get; set; }
 
         private PSHost Host
             => CommandRuntime.Host;
@@ -112,6 +110,12 @@ namespace PSConcurrent
 
         protected override void ProcessRecord()
         {
+            if (ScriptBlock == null || ScriptBlock.Length == 0)
+                return;
+
+            var variables = Variable.CompactOrEmpty();
+            var modules   = Module  .CompactOrEmpty();
+
             foreach (var script in ScriptBlock)
             {
                 if (script == null)
@@ -121,9 +125,9 @@ namespace PSConcurrent
                     return;
 
                 var taskId = _tasks.Count + 1;
-                var work   = new TaskWork(script, Variable, Module);
+                var work   = new TaskWork(script, variables, modules);
 
-                _tasks.Add(_taskFactory.StartNew(
+                _tasks.Add(_taskFactory!.StartNew(
                     () => TaskMain(taskId, work)
                 ));
             }
@@ -222,24 +226,24 @@ namespace PSConcurrent
             return state;
         }
 
-        private void HandleOutput(int taskId, object obj)
+        private void HandleOutput(int taskId, object? obj)
         {
             var output = new TaskOutput
             {
                 TaskId = taskId,
-                Object = (PSObject) obj
+                Object = (PSObject?) obj
             };
 
             _mainThread.InvokeOnMainThread(() => WriteOutput(output));
         }
-        
+
         protected virtual void WriteOutput(TaskOutput output)
         {
             // This method makes WriteObject virtual to accommodate testing.
             WriteObject(output);
         }
 
-        private void HandleException(Exception e, int taskId, TaskHost host = null)
+        private void HandleException(Exception e, int taskId, TaskHost host)
         {
             if (e is AggregateException aggregate)
             {
