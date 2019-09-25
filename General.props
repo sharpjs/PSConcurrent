@@ -1,7 +1,7 @@
 ﻿<Project>
 
   <!--
-    Copyright (C) 2018 Jeffrey Sharp
+    Copyright (C) 2019 Jeffrey Sharp
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,7 @@
     <Version>1.0.1-local</Version>
     <VersionIsTagged>false</VersionIsTagged>
     <Authors>Jeffrey Sharp</Authors>
-    <Copyright>Copyright 2018 Jeffrey Sharp</Copyright>
+    <Copyright>Copyright 2019 Jeffrey Sharp</Copyright>
     <PackageLicenseUrl>https://github.com/sharpjs/PSConcurrent/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/sharpjs/PSConcurrent</PackageProjectUrl>
     <PackageTags>Concurrent Parallel Thread Invoke</PackageTags>
