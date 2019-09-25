@@ -23,13 +23,14 @@ namespace PSConcurrent
     internal class ConsoleState
     {
         /// <summary>
-        ///   Whether the console is at the beginning of a line.
+        ///   Gets or sets whether the console is at the beginning of a line.
         /// </summary>
-        internal bool IsAtBol = true;
+        internal bool IsAtBol { get; set; } = true;
 
         /// <summary>
-        ///   The id of the task that most recently wrote to the console.
+        ///   Gets or sets the id of the task that most recently wrote to the
+        ///   console.
         /// </summary>
-        internal int LastTaskId;
+        internal int LastTaskId { get; set; }
     }
 }
