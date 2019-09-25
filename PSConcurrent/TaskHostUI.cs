@@ -48,7 +48,7 @@ namespace PSConcurrent
         public override bool SupportsVirtualTerminal
             => _ui.SupportsVirtualTerminal;
 
-        public override void Write(string text)
+        public override void Write(string? text)
         {
             lock (_console)
             {
@@ -57,7 +57,7 @@ namespace PSConcurrent
             }
         }
 
-        public override void Write(ConsoleColor foreground, ConsoleColor background, string text)
+        public override void Write(ConsoleColor foreground, ConsoleColor background, string? text)
         {
             lock (_console)
             {
@@ -71,7 +71,7 @@ namespace PSConcurrent
             WriteLine("");
         }
 
-        public override void WriteLine(string text)
+        public override void WriteLine(string? text)
         {
             lock (_console)
             {
@@ -80,7 +80,7 @@ namespace PSConcurrent
             }
         }
 
-        public override void WriteLine(ConsoleColor foreground, ConsoleColor background, string text)
+        public override void WriteLine(ConsoleColor foreground, ConsoleColor background, string? text)
         {
             lock (_console)
             {
@@ -89,7 +89,7 @@ namespace PSConcurrent
             }
         }
 
-        public override void WriteDebugLine(string text)
+        public override void WriteDebugLine(string? text)
         {
             lock (_console)
             {
@@ -98,7 +98,7 @@ namespace PSConcurrent
             }
         }
 
-        public override void WriteVerboseLine(string text)
+        public override void WriteVerboseLine(string? text)
         {
             lock (_console)
             {
@@ -107,7 +107,7 @@ namespace PSConcurrent
             }
         }
 
-        public override void WriteWarningLine(string text)
+        public override void WriteWarningLine(string? text)
         {
             lock (_console)
             {
@@ -116,7 +116,7 @@ namespace PSConcurrent
             }
         }
 
-        public override void WriteErrorLine(string text)
+        public override void WriteErrorLine(string? text)
         {
             lock (_console)
             {
@@ -164,28 +164,28 @@ namespace PSConcurrent
         }
 
         public override Dictionary<string, PSObject> Prompt(
-            string caption, string message, Collection<FieldDescription> descriptions)
+            string? caption, string? message, Collection<FieldDescription> descriptions)
         {
             lock (_console)
                 return _ui.Prompt(caption, message, descriptions);
         }
 
         public override int PromptForChoice(
-            string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
+            string? caption, string? message, Collection<ChoiceDescription> choices, int defaultChoice)
         {
             lock (_console)
                 return _ui.PromptForChoice(caption, message, choices, defaultChoice);
         }
 
         public override PSCredential PromptForCredential(
-            string caption, string message, string userName, string targetName)
+            string? caption, string? message, string? userName, string? targetName)
         {
             lock (_console)
                 return _ui.PromptForCredential(caption, message, userName, targetName);
         }
 
         public override PSCredential PromptForCredential(
-            string caption, string message, string userName, string targetName,
+            string? caption, string? message, string? userName, string? targetName,
             PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
         {
             lock (_console)
@@ -193,7 +193,7 @@ namespace PSConcurrent
                     caption, message, userName, targetName, allowedCredentialTypes, options);
         }
 
-        private string Prepare(string text)
+        private string Prepare(string? text)
         {
             if (!_console.IsAtBol)
             {
@@ -202,7 +202,7 @@ namespace PSConcurrent
                     // one to write to it.  The console state is as the task
                     // expects.  There is no need to modify the console state
                     // or to add any information to the text.
-                    return text;
+                    return text ?? "";
 
                 // The console is not at BOL, because some other task wrote a
                 // partial line to it.  End that line, so that this task's text
@@ -225,7 +225,7 @@ namespace PSConcurrent
             _console.LastTaskId = _taskId;
         }
 
-        private static bool EndsWithEol(string value)
+        private static bool EndsWithEol(string? value)
             => value != null
             && value.EndsWith("\n", StringComparison.Ordinal);
     }
