@@ -31,6 +31,7 @@ https://github.com/sharpjs/PSConcurrent/releases
 
   <PropertyGroup>
     <LangVersion>8.0</LangVersion>
+    <PackageOutputPath>..\dist\</PackageOutputPath>
   </PropertyGroup>
 
 </Project>
