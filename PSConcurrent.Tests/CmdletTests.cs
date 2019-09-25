@@ -22,6 +22,8 @@ using System.Management.Automation.Runspaces;
 using FluentAssertions;
 using NUnit.Framework;
 
+#nullable disable
+
 namespace PSConcurrent.Tests
 {
     public class CmdletTests

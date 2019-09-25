@@ -26,6 +26,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sharp.Async;
 
+#nullable disable
+
 namespace PSConcurrent
 {
     /// <summary>

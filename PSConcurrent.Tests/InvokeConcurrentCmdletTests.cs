@@ -24,6 +24,8 @@ using FluentAssertions.Extensions;
 using Moq;
 using NUnit.Framework;
 
+#nullable disable
+
 namespace PSConcurrent.Tests
 {
     [TestFixture]

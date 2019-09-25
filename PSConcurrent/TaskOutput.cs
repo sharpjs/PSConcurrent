@@ -24,13 +24,13 @@ namespace PSConcurrent
     public class TaskOutput
     {
         /// <summary>
-        ///   The id of the task that produced the output object.
+        ///   Gets or sets the id of the task that produced the output object.
         /// </summary>
         public int TaskId { get; set; }
 
         /// <summary>
-        ///   The output object produced by the task.
+        ///   Gets or sets the output object produced by the task.
         /// </summary>
-        public PSObject Object { get; set; }
+        public PSObject? Object { get; set; }
     }
 }

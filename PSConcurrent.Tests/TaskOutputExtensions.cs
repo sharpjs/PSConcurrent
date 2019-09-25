@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 
+#nullable disable
+
 namespace PSConcurrent
 {
     internal static class TaskOutputExtensions
