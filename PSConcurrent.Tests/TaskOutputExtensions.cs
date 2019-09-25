@@ -14,30 +14,35 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-
-#nullable disable
 
 namespace PSConcurrent
 {
     internal static class TaskOutputExtensions
     {
-        public static IEnumerable<object> OfTask(
+        public static IEnumerable<object?> OfTask(
             this IEnumerable<PSObject> source,
             int                        taskId)
         {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
             return source
                 .Select(o => o.BaseObject)
                 .OfType<TaskOutput>()
                 .OfTask(taskId);
         }
 
-        public static IEnumerable<object> OfTask(
+        public static IEnumerable<object?> OfTask(
             this IEnumerable<TaskOutput> source,
             int                          taskId)
         {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
             return source
                 .Where(o => o.TaskId == taskId)
                 .Select(o => o.Object?.BaseObject);
