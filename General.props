@@ -21,7 +21,7 @@
     <Version>1.0.1-local</Version>
     <Authors>Jeffrey Sharp</Authors>
     <Copyright>Copyright 2019 Jeffrey Sharp</Copyright>
-    <PackageLicenseUrl>https://github.com/sharpjs/PSConcurrent/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseExpression>ISC</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sharpjs/PSConcurrent</PackageProjectUrl>
     <PackageTags>Concurrent Parallel Thread Invoke</PackageTags>
     <PackageReleaseNotes>Release notes are available at:
