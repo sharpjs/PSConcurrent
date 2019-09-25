@@ -1,9 +1,15 @@
 {
   "profiles": {
-    "RSMassTransit.PowerShell": {
+    "PS Core": {
       "commandName": "Executable",
-      "executablePath": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-      "commandLineArgs": "-NoLogo -NoProfile -NoExit -Command \"Import-Module .\\PSConcurrent.psd1\"",
+      "executablePath": "pwsh",
+      "commandLineArgs": "-NoLogo -NoProfile -NoExit -Command \"Import-Module .\\PSConcurrent.psd1; Set-PSReadLineOption -EditMode Emacs\"",
+      "workingDirectory": "$(OutDir)"
+    },
+    "PS Desktop": {
+      "commandName": "Executable",
+      "executablePath": "powershell",
+      "commandLineArgs": "-NoLogo -NoProfile -NoExit -Command \"Import-Module .\\PSConcurrent.psd1; Set-PSReadLineOption -EditMode Emacs\"",
       "workingDirectory": "$(OutDir)"
     }
   }

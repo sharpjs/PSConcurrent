@@ -21,11 +21,14 @@
 
   <PropertyGroup>
     <Description>PowerShell Invoke-Concurrent Cmdlet</Description>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="[1.1.0,2.0.0)" />
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Sharp.Async" Version="[0.0.1,1.0.0)" />
   </ItemGroup>
 
