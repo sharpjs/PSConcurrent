@@ -45,11 +45,8 @@ namespace PSConcurrent
         public override PSHostRawUserInterface RawUI
             => _ui.RawUI;
 
-        // This method disappeared when the project was changed to use the
-        // reference assemblies from NuGet.
-        //
-        //public override bool SupportsVirtualTerminal
-        //    => _ui.SupportsVirtualTerminal;
+        public override bool SupportsVirtualTerminal
+            => _ui.SupportsVirtualTerminal;
 
         public override void Write(string text)
         {
