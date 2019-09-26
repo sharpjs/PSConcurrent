@@ -39,7 +39,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(1).Should().Equal("a");
 
             e.Should().BeNull();
         }
@@ -52,7 +52,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(1).Should().Equal("a");
 
             e.Should().BeNull();
         }
@@ -65,7 +65,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(1).Should().Equal("a");
 
             e.Should().BeNull();
         }
@@ -78,9 +78,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().BeObjects("a");
-            output.OfTask(2).Should().BeObjects("b");
-            output.OfTask(3).Should().BeObjects("c");
+            output.OfTask(1).Should().Equal("a");
+            output.OfTask(2).Should().Equal("b");
+            output.OfTask(3).Should().Equal("c");
 
             e.Should().BeNull();
         }
@@ -93,9 +93,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().BeObjects("a");
-            output.OfTask(2).Should().BeObjects("b");
-            output.OfTask(3).Should().BeObjects("c");
+            output.OfTask(1).Should().Equal("a");
+            output.OfTask(2).Should().Equal("b");
+            output.OfTask(3).Should().Equal("c");
 
             e.Should().BeNull();
         }
@@ -111,9 +111,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().BeObjects("a");
-            output.OfTask(2).Should().BeObjects("b");
-            output.OfTask(3).Should().BeObjects("c");
+            output.OfTask(1).Should().Equal("a");
+            output.OfTask(2).Should().Equal("b");
+            output.OfTask(3).Should().Equal("c");
 
             e.Should().BeNull();
         }
@@ -126,9 +126,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().BeObjects("a");
-            output.OfTask(2).Should().BeObjects("b");
-            output.OfTask(3).Should().BeObjects("c");
+            output.OfTask(1).Should().Equal("a");
+            output.OfTask(2).Should().Equal("b");
+            output.OfTask(3).Should().Equal("c");
 
             e.Should().BeNull();
         }
@@ -141,9 +141,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().BeObjects("a");
-            output.OfTask(2).Should().BeObjects("b");
-            output.OfTask(3).Should().BeObjects("c");
+            output.OfTask(1).Should().Equal("a");
+            output.OfTask(2).Should().Equal("b");
+            output.OfTask(3).Should().Equal("c");
 
             e.Should().BeNull();
         }
@@ -159,9 +159,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().BeObjects("a");
-            output.OfTask(2).Should().BeObjects("b");
-            output.OfTask(3).Should().BeObjects("c");
+            output.OfTask(1).Should().Equal("a");
+            output.OfTask(2).Should().Equal("b");
+            output.OfTask(3).Should().Equal("c");
 
             e.Should().BeNull();
         }
@@ -174,7 +174,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects("a");
+            output.OfTask(1).Should().Equal("a");
 
             e.Should().NotBeNull().And.BeAssignableTo<RuntimeException>();
         }
@@ -188,7 +188,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects(null as object);
+            output.OfTask(1).Should().Equal(null as object);
 
             e.Should().BeNull();
         }
@@ -202,7 +202,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects(null as object);
+            output.OfTask(1).Should().Equal(null as object);
 
             e.Should().BeNull();
         }
@@ -216,7 +216,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects(null as object);
+            output.OfTask(1).Should().Equal(null as object);
 
             e.Should().BeNull();
         }
@@ -230,7 +230,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(2);
-            output.OfTask(1).Should().BeObjects("Foo", "Bar");
+            output.OfTask(1).Should().Equal("Foo", "Bar");
 
             e.Should().BeNull();
         }
@@ -244,7 +244,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(2);
-            output.OfTask(1).Should().BeObjects("Foo", "Bar");
+            output.OfTask(1).Should().Equal("Foo", "Bar");
 
             e.Should().BeNull();
         }
@@ -264,9 +264,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(4);
-            output.OfTask(1).Should().BeObjects("Foo", "Bar");
-            output.OfTask(2).Should().BeObjects("Foo");
-            output.OfTask(3).Should().BeObjects("Bar");
+            output.OfTask(1).Should().Equal("Foo", "Bar");
+            output.OfTask(2).Should().Equal("Foo");
+            output.OfTask(3).Should().Equal("Bar");
 
             e.Should().BeNull();
         }
@@ -288,9 +288,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(4);
-            output.OfTask(1).Should().BeObjects("Foo", "Bar");
-            output.OfTask(2).Should().BeObjects("Foo");
-            output.OfTask(3).Should().BeObjects("Bar");
+            output.OfTask(1).Should().Equal("Foo", "Bar");
+            output.OfTask(2).Should().Equal("Foo");
+            output.OfTask(3).Should().Equal("Bar");
 
             e.Should().BeNull();
         }
@@ -308,7 +308,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(2);
-            output.OfTask(1).Should().BeObjects(null, "Bar");
+            output.OfTask(1).Should().Equal(null, "Bar");
 
             e.Should().BeNull();
         }
@@ -324,7 +324,7 @@ namespace PSConcurrent.Tests
 
             output.Should().HaveCount(1);
             output.OfTask(1).Should().BeEmpty();
-            output.OfTask(2).Should().BeObjects("Foo");
+            output.OfTask(2).Should().Equal("Foo");
 
             e.Should().BeNull();
         }
@@ -340,7 +340,7 @@ namespace PSConcurrent.Tests
 
             output.Should().HaveCount(1);
             output.OfTask(1).Should().BeEmpty();
-            output.OfTask(2).Should().BeObjects("Foo");
+            output.OfTask(2).Should().Equal("Foo");
 
             e.Should().BeNull();
         }
@@ -359,7 +359,7 @@ namespace PSConcurrent.Tests
 
             output.Should().HaveCount(1);
             output.OfTask(1).Should().BeEmpty();
-            output.OfTask(2).Should().BeObjects("Foo");
+            output.OfTask(2).Should().Equal("Foo");
 
             e.Should().BeNull();
         }
@@ -465,7 +465,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(2);
-            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
+            output.OfTask(1).Should().Equal("TestModuleA Output", "TestModuleB Output");
 
             e.Should().BeNull();
         }
@@ -480,7 +480,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(2);
-            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
+            output.OfTask(1).Should().Equal("TestModuleA Output", "TestModuleB Output");
 
             e.Should().BeNull();
         }
@@ -500,9 +500,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(4);
-            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
-            output.OfTask(2).Should().BeObjects("TestModuleA Output");
-            output.OfTask(3).Should().BeObjects("TestModuleB Output");
+            output.OfTask(1).Should().Equal("TestModuleA Output", "TestModuleB Output");
+            output.OfTask(2).Should().Equal("TestModuleA Output");
+            output.OfTask(3).Should().Equal("TestModuleB Output");
 
             e.Should().BeNull();
         }
@@ -524,9 +524,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(4);
-            output.OfTask(1).Should().BeObjects("TestModuleA Output", "TestModuleB Output");
-            output.OfTask(2).Should().BeObjects("TestModuleA Output");
-            output.OfTask(3).Should().BeObjects("TestModuleB Output");
+            output.OfTask(1).Should().Equal("TestModuleA Output", "TestModuleB Output");
+            output.OfTask(2).Should().Equal("TestModuleA Output");
+            output.OfTask(3).Should().Equal("TestModuleB Output");
 
             e.Should().BeNull();
         }
@@ -544,7 +544,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects("TestModuleB Output");
+            output.OfTask(1).Should().Equal("TestModuleB Output");
 
             e.Should().BeNull();
         }
@@ -557,9 +557,9 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(3);
-            output.OfTask(1).Should().BeObjects(1);
-            output.OfTask(2).Should().BeObjects(2);
-            output.OfTask(3).Should().BeObjects(3);
+            output.OfTask(1).Should().Equal(1);
+            output.OfTask(2).Should().Equal(2);
+            output.OfTask(3).Should().Equal(3);
 
             e.Should().BeNull();
         }
@@ -572,7 +572,7 @@ namespace PSConcurrent.Tests
             ");
 
             output.Should().HaveCount(1);
-            output.OfTask(1).Should().BeObjects("Stop");
+            output.OfTask(1).Should().Equal("Stop");
 
             e.Should().BeNull();
         }
