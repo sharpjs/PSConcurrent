@@ -22,6 +22,7 @@
   <PropertyGroup>
     <Description>Tests for PowerShell Invoke-Concurrent Cmdlet</Description>
     <TargetFramework>net48</TargetFramework>
+    <RootNamespace>PSConcurrent</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
