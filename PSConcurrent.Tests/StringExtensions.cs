@@ -14,7 +14,7 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-namespace PSConcurrent.Tests
+namespace PSConcurrent
 {
     public static class StringExtensions
     {

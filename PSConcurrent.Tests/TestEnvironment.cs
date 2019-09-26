@@ -19,22 +19,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using FluentAssertions;
 using NUnit.Framework;
 
-#nullable disable
-
-namespace PSConcurrent.Tests
+namespace PSConcurrent
 {
-    public class CmdletTests
+    internal static class TestEnvironment
     {
-        private InitialSessionState _initialState;
-        private string              _scriptPreamble;
+        private static readonly InitialSessionState
+            InitialState = CreateInitialSessionState();
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        private static readonly string
+            ScriptPreamble = CreateScriptPreamble();
+
+        private static InitialSessionState CreateInitialSessionState()
         {
-            _initialState = InitialSessionState.CreateDefault();
+            var _initialState = InitialSessionState.CreateDefault();
 
             _initialState.Variables.Add(new SessionStateVariableEntry(
                 "ErrorActionPreference", "Stop", null
@@ -45,31 +44,36 @@ namespace PSConcurrent.Tests
 
             _initialState.ImportPSModule(new[] { modulePath });
 
-            _scriptPreamble = $@"
+            return _initialState;
+        }
+
+        private static string CreateScriptPreamble()
+        {
+            var testPath = TestContext.CurrentContext.TestDirectory;
+            return $@"
                 cd ""{testPath.EscapeForDoubleQuoteString()}""
             ";
         }
 
-        protected (ICollection<PSObject>, Exception) Invoke(string script)
+        internal static (ICollection<PSObject?>, Exception?) Invoke(string script)
         {
-            script = _scriptPreamble + script;
+            script = ScriptPreamble + script;
 
-            using (var shell = PowerShell.Create(_initialState))
+            using var shell = PowerShell.Create(InitialState);
+
+            var output    = new List<PSObject?>();
+            var exception = null as Exception;
+
+            try
             {
-                var output    = new List<PSObject>();
-                var exception = null as Exception;
-
-                try
-                {
-                    shell.AddScript(script).Invoke(null, output);
-                }
-                catch (Exception e)
-                {
-                    exception = e;
-                }
-
-                return (output, exception);
+                shell.AddScript(script).Invoke(null, output);
             }
+            catch (Exception e)
+            {
+                exception = e;
+            }
+
+            return (output, exception);
         }
     }
 }

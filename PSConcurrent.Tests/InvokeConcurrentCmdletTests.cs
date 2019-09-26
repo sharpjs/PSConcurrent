@@ -23,13 +23,13 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using Moq;
 using NUnit.Framework;
+using static PSConcurrent.TestEnvironment;
 
-#nullable disable
-
-namespace PSConcurrent.Tests
+namespace PSConcurrent
 {
     [TestFixture]
-    public class InvokeConcurrentCmdletTests : CmdletTests
+    [Parallelizable(ParallelScope.All)]
+    public class InvokeConcurrentCmdletTests
     {
         [Test]
         public void One_ArgumentBlock()
