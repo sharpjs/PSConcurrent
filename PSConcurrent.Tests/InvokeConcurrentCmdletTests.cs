@@ -374,7 +374,7 @@ namespace PSConcurrent
             ");
 
             output.Should().HaveCount(2);
-            output.Select(o => o.BaseObject).Should().Contain("Foo").And.Contain("Bar");
+            output.Select(o => o?.BaseObject).Should().Contain("Foo").And.Contain("Bar");
 
             e.Should().BeNull();
         }
@@ -389,7 +389,7 @@ namespace PSConcurrent
             ");
 
             output.Should().HaveCount(2);
-            output.Select(o => o.BaseObject).Should().Contain("Foo").And.Contain("Bar");
+            output.Select(o => o?.BaseObject).Should().Contain("Foo").And.Contain("Bar");
 
             e.Should().BeNull();
         }
@@ -408,7 +408,7 @@ namespace PSConcurrent
             ");
 
             output.Should().HaveCount(2);
-            output.Select(o => o.BaseObject).Should().Contain("Foo").And.Contain("Bar");
+            output.Select(o => o?.BaseObject).Should().Contain("Foo").And.Contain("Bar");
 
             e.Should().BeNull();
         }
@@ -601,8 +601,8 @@ namespace PSConcurrent
 
             output.Should().BeEmpty();
 
-            e               .Should().BeAssignableTo<RuntimeException>();
-            e.InnerException.Should().BeAssignableTo<InvalidOperationException>();
+            e                .Should().BeAssignableTo<RuntimeException>();
+            e!.InnerException.Should().BeAssignableTo<InvalidOperationException>();
         }
 
         [Test]
@@ -616,8 +616,8 @@ namespace PSConcurrent
 
             output.Should().BeEmpty();
 
-            e               .Should().BeAssignableTo<RuntimeException>();
-            e.InnerException.Should().BeAssignableTo<AggregateException>();
+            e                .Should().BeAssignableTo<RuntimeException>();
+            e!.InnerException.Should().BeAssignableTo<AggregateException>();
 
             ((AggregateException) e.InnerException).InnerExceptions
                 .Should().HaveCount(2)
@@ -637,8 +637,8 @@ namespace PSConcurrent
 
             output.Should().BeEmpty();
 
-            e               .Should().BeAssignableTo<RuntimeException>();
-            e.InnerException.Should().BeAssignableTo<InvalidOperationException>();
+            e                .Should().BeAssignableTo<RuntimeException>();
+            e!.InnerException.Should().BeAssignableTo<InvalidOperationException>();
         }
 
         [Test]
@@ -655,8 +655,8 @@ namespace PSConcurrent
 
             output.Should().BeEmpty();
 
-            e               .Should().BeAssignableTo<RuntimeException>();
-            e.InnerException.Should().BeAssignableTo<AggregateException>();
+            e                .Should().BeAssignableTo<RuntimeException>();
+            e!.InnerException.Should().BeAssignableTo<AggregateException>();
 
             ((AggregateException) e.InnerException).InnerExceptions
                 .Should().HaveCount(2)
@@ -679,8 +679,8 @@ namespace PSConcurrent
 
             output.Should().BeEmpty();
 
-            e               .Should().BeAssignableTo<RuntimeException>();
-            e.InnerException.Should().BeAssignableTo<AggregateException>();
+            e                .Should().BeAssignableTo<RuntimeException>();
+            e!.InnerException.Should().BeAssignableTo<AggregateException>();
 
             ((AggregateException) e.InnerException).InnerExceptions
                 .Should().HaveCount(2)
