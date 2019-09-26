@@ -23,7 +23,7 @@ using NUnit.Framework;
 
 #nullable disable
 
-namespace PSConcurrent.Tests
+namespace PSConcurrent
 {
     [TestFixture]
     public class TaskHostTests
