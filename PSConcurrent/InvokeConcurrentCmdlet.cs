@@ -113,8 +113,8 @@ namespace PSConcurrent
             if (ScriptBlock == null || ScriptBlock.Length == 0)
                 return;
 
-            var variables = Variable.CompactOrEmpty();
-            var modules   = Module  .CompactOrEmpty();
+            var variables = Variable.OrEmpty().Compact();
+            var modules   = Module  .OrEmpty().Compact();
 
             foreach (var script in ScriptBlock)
             {
