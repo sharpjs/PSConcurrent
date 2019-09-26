@@ -16,9 +16,9 @@
 
 namespace PSConcurrent
 {
-    public static class StringExtensions
+    internal static class StringExtensions
     {
-        public static string EscapeForDoubleQuoteString(this string s)
+        internal static string EscapeForDoubleQuoteString(this string s)
             => s.Replace("\"", "`\"").Replace("`", "``");
     }
 }
