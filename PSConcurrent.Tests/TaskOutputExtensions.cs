@@ -24,14 +24,14 @@ namespace PSConcurrent
     internal static class TaskOutputExtensions
     {
         public static IEnumerable<object?> OfTask(
-            this IEnumerable<PSObject> source,
-            int                        taskId)
+            this IEnumerable<PSObject?> source,
+            int                         taskId)
         {
             if (source is null)
                 throw new ArgumentNullException(nameof(source));
 
             return source
-                .Select(o => o.BaseObject)
+                .Select(o => o?.BaseObject)
                 .OfType<TaskOutput>()
                 .OfTask(taskId);
         }
