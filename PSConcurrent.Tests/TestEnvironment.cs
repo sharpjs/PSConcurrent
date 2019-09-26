@@ -29,7 +29,12 @@ namespace PSConcurrent
             InitialState = CreateInitialSessionState();
 
         private static readonly string
-            ScriptPreamble = CreateScriptPreamble();
+            ScriptPreamble = $@"
+                cd ""{TestPath.EscapeForDoubleQuoteString()}""
+            ";
+
+        private static string
+            TestPath => TestContext.CurrentContext.TestDirectory;
 
         private static InitialSessionState CreateInitialSessionState()
         {
@@ -39,34 +44,28 @@ namespace PSConcurrent
                 "ErrorActionPreference", "Stop", null
             ));
 
-            var testPath   = TestContext.CurrentContext.TestDirectory;
-            var modulePath = Path.Combine(testPath, "PSConcurrent.psd1");
+            var modulePath = Path.Combine(TestPath, "PSConcurrent.psd1");
 
             _initialState.ImportPSModule(new[] { modulePath });
 
             return _initialState;
         }
 
-        private static string CreateScriptPreamble()
-        {
-            var testPath = TestContext.CurrentContext.TestDirectory;
-            return $@"
-                cd ""{testPath.EscapeForDoubleQuoteString()}""
-            ";
-        }
-
         internal static (ICollection<PSObject?>, Exception?) Invoke(string script)
         {
-            script = ScriptPreamble + script;
+            if (script is null)
+                throw new ArgumentNullException(nameof(script));
 
-            using var shell = PowerShell.Create(InitialState);
+            script = ScriptPreamble + script;
 
             var output    = new List<PSObject?>();
             var exception = null as Exception;
 
+            using var shell = PowerShell.Create(InitialState);
+
             try
             {
-                shell.AddScript(script).Invoke(null, output);
+                shell.AddScript(script).Invoke(input: null, output);
             }
             catch (Exception e)
             {
