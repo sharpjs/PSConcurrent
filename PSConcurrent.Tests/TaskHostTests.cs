@@ -109,28 +109,32 @@ namespace PSConcurrent
         }
 
         [Test]
-        public void DebuggerEnabled_Get()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DebuggerEnabled_Get(bool value)
         {
             using var my = new TestHarness();
 
             my.MockHost
                 .SetupGet(h => h.DebuggerEnabled)
-                .Returns(true)
+                .Returns(value)
                 .Verifiable();
 
-            my.TaskHost.DebuggerEnabled.Should().BeTrue();
+            my.TaskHost.DebuggerEnabled.Should().Be(value);
         }
 
         [Test]
-        public void DebuggerEnabled_Set()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DebuggerEnabled_Set(bool value)
         {
             using var my = new TestHarness();
 
             my.MockHost
-                .SetupSet(h => h.DebuggerEnabled = true)
+                .SetupSet(h => h.DebuggerEnabled = value)
                 .Verifiable();
 
-            my.TaskHost.DebuggerEnabled = true;
+            my.TaskHost.DebuggerEnabled = value;
         }
 
         [Test]
