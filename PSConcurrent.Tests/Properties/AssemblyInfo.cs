@@ -16,6 +16,7 @@
 
 using System.Runtime.InteropServices;
 using System.Security;
+using NUnit.Framework;
 
 // Security (.NET Framework)
 //
@@ -27,3 +28,6 @@ using System.Security;
 
 // COM Compliance
 [assembly: ComVisible(false)]
+
+// Testing
+[assembly: Parallelizable(ParallelScope.All)]
