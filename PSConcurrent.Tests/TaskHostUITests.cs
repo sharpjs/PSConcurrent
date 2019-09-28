@@ -109,7 +109,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.Write("message"))
@@ -124,7 +124,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -163,7 +163,7 @@ namespace PSConcurrent
             var bg = Random.NextEnum<ConsoleColor>();
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.Write(fg, bg, "message"))
@@ -181,7 +181,7 @@ namespace PSConcurrent
             var bg = Random.NextEnum<ConsoleColor>();
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -214,7 +214,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.WriteLine(""))
@@ -229,7 +229,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -262,7 +262,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.WriteLine("message"))
@@ -277,7 +277,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -316,7 +316,7 @@ namespace PSConcurrent
             var bg = Random.NextEnum<ConsoleColor>();
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.WriteLine(fg, bg, "message"))
@@ -334,7 +334,7 @@ namespace PSConcurrent
             var bg = Random.NextEnum<ConsoleColor>();
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -369,7 +369,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.WriteDebugLine("message"))
@@ -384,7 +384,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -419,7 +419,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.WriteVerboseLine("message"))
@@ -434,7 +434,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -469,7 +469,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.WriteWarningLine("message"))
@@ -484,7 +484,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -519,7 +519,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 1;
+            my.ConsoleState.LastTaskId = my.TaskId;
 
             my.MockUI
                 .Setup(u => u.WriteErrorLine("message"))
@@ -534,7 +534,7 @@ namespace PSConcurrent
             using var my = new TestHarness(taskId: 1);
 
             my.ConsoleState.IsAtBol    = false;
-            my.ConsoleState.LastTaskId = 42; // not me
+            my.ConsoleState.LastTaskId = my.TaskId + 42; // not me
 
             my.MockUI
                 .Setup(u => u.WriteLine())
@@ -581,14 +581,22 @@ namespace PSConcurrent
         private class TestHarness : TestHarnessBase
         {
             public TaskHostUI                TaskHostUI   { get; }
+            public int                       TaskId       { get; }
             public Mock<PSHostUserInterface> MockUI       { get; }
             public ConsoleState              ConsoleState { get; }
 
-            public TestHarness(int taskId = default)
+            public TestHarness(int? taskId = null)
             {
-                MockUI       = Mocks.Create<PSHostUserInterface>();
-                ConsoleState = new ConsoleState();
-                TaskHostUI   = new TaskHostUI(MockUI.Object, ConsoleState, taskId);
+                TaskId = taskId ?? Random.Next();
+                MockUI = Mocks.Create<PSHostUserInterface>();
+
+                ConsoleState = new ConsoleState
+                {
+                    IsAtBol    = Random.NextBool(),
+                    LastTaskId = Random.Next()
+                };
+
+                TaskHostUI = new TaskHostUI(MockUI.Object, ConsoleState, TaskId);
             }
         }
     }
