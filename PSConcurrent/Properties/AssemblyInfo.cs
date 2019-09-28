@@ -18,14 +18,16 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 
-// Security
+// Security (.NET Framework)
 //
 // All types and members are security-critical, except where
 // being security-critical violates an inheritance rule.
 // http://msdn.microsoft.com/en-us/library/dd233102.aspx
 //
 [assembly: SecurityRules(SecurityRuleSet.Level2)]
-[assembly: InternalsVisibleTo("PSConcurrent.Tests")]
 
 // COM Compliance
 [assembly: ComVisible(false)]
+
+// Testing
+[assembly: InternalsVisibleTo("PSConcurrent.Tests")]

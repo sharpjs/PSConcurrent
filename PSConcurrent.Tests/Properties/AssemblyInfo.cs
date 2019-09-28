@@ -17,7 +17,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-// Security
+// Security (.NET Framework)
 //
 // All types and members are security-critical, except where
 // being security-critical violates an inheritance rule.
