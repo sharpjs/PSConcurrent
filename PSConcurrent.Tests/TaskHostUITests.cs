@@ -348,6 +348,206 @@ namespace PSConcurrent
         }
 
         [Test]
+        public void WriteDebugLine_BeginningLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol = true;
+
+            my.MockUI
+                .Setup(u => u.WriteDebugLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteDebugLine("message");
+        }
+
+        [Test]
+        public void WriteDebugLine_ContinuingLine()
+        {
+            // TODO: This behavior probably is not desired.
+
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 1;
+
+            my.MockUI
+                .Setup(u => u.WriteDebugLine("message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteDebugLine("message");
+        }
+
+        [Test]
+        public void WriteDebugLine_InterruptingLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 42; // not me
+
+            my.MockUI
+                .Setup(u => u.WriteLine())
+                .Verifiable();
+
+            my.MockUI
+                .Setup(u => u.WriteDebugLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteDebugLine("message");
+        }
+
+        [Test]
+        public void WriteVerboseLine_BeginningLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol = true;
+
+            my.MockUI
+                .Setup(u => u.WriteVerboseLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteVerboseLine("message");
+        }
+
+        [Test]
+        public void WriteVerboseLine_ContinuingLine()
+        {
+            // TODO: This behavior probably is not desired.
+
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 1;
+
+            my.MockUI
+                .Setup(u => u.WriteVerboseLine("message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteVerboseLine("message");
+        }
+
+        [Test]
+        public void WriteVerboseLine_InterruptingLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 42; // not me
+
+            my.MockUI
+                .Setup(u => u.WriteLine())
+                .Verifiable();
+
+            my.MockUI
+                .Setup(u => u.WriteVerboseLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteVerboseLine("message");
+        }
+
+        [Test]
+        public void WriteWarningLine_BeginningLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol = true;
+
+            my.MockUI
+                .Setup(u => u.WriteWarningLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteWarningLine("message");
+        }
+
+        [Test]
+        public void WriteWarningLine_ContinuingLine()
+        {
+            // TODO: This behavior probably is not desired.
+
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 1;
+
+            my.MockUI
+                .Setup(u => u.WriteWarningLine("message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteWarningLine("message");
+        }
+
+        [Test]
+        public void WriteWarningLine_InterruptingLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 42; // not me
+
+            my.MockUI
+                .Setup(u => u.WriteLine())
+                .Verifiable();
+
+            my.MockUI
+                .Setup(u => u.WriteWarningLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteWarningLine("message");
+        }
+
+        [Test]
+        public void WriteErrorLine_BeginningLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol = true;
+
+            my.MockUI
+                .Setup(u => u.WriteErrorLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteErrorLine("message");
+        }
+
+        [Test]
+        public void WriteErrorLine_ContinuingLine()
+        {
+            // TODO: This behavior probably is not desired.
+
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 1;
+
+            my.MockUI
+                .Setup(u => u.WriteErrorLine("message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteErrorLine("message");
+        }
+
+        [Test]
+        public void WriteErrorLine_InterruptingLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            my.ConsoleState.IsAtBol    = false;
+            my.ConsoleState.LastTaskId = 42; // not me
+
+            my.MockUI
+                .Setup(u => u.WriteLine())
+                .Verifiable();
+
+            my.MockUI
+                .Setup(u => u.WriteErrorLine("[Task 1]: message"))
+                .Verifiable();
+
+            my.TaskHostUI.WriteErrorLine("message");
+        }
+
+        [Test]
         public void WriteInformation()
         {
             using var my = new TestHarness();
