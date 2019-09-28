@@ -101,6 +101,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.Write("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeFalse();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -116,6 +119,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.Write("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeFalse();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -135,6 +141,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.Write("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeFalse();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -152,6 +161,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.Write(fg, bg, "message");
+
+            my.ConsoleState.IsAtBol   .Should().BeFalse();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -170,6 +182,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.Write(fg, bg, "message");
+
+            my.ConsoleState.IsAtBol   .Should().BeFalse();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -192,6 +207,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.Write(fg, bg, "message");
+
+            my.ConsoleState.IsAtBol   .Should().BeFalse();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -206,6 +224,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine();
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -221,6 +242,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine();
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -240,6 +264,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine();
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -254,6 +281,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -269,6 +299,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -288,6 +321,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -305,6 +341,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine(fg, bg, "message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -323,6 +362,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine(fg, bg, "message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -345,6 +387,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteLine(fg, bg, "message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -359,6 +404,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteDebugLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -376,6 +424,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteDebugLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -395,6 +446,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteDebugLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -409,6 +463,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteVerboseLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -426,6 +483,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteVerboseLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -445,6 +505,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteVerboseLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -459,6 +522,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteWarningLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -476,6 +542,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteWarningLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -495,6 +564,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteWarningLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -509,6 +581,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteErrorLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -526,6 +601,9 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteErrorLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
@@ -545,12 +623,18 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteErrorLine("message");
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         [Test]
         public void WriteInformation()
         {
             using var my = new TestHarness();
+
+            var originalIsAtBol    = my.ConsoleState.IsAtBol;
+            var originalLastTaskId = my.ConsoleState.LastTaskId;
 
             var record = new InformationRecord(new object(), "any");
 
@@ -559,12 +643,18 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteInformation(record);
+
+            my.ConsoleState.IsAtBol   .Should().Be(originalIsAtBol);
+            my.ConsoleState.LastTaskId.Should().Be(originalLastTaskId);
         }
 
         [Test]
         public void WriteProgress()
         {
             using var my = new TestHarness();
+
+            var originalIsAtBol    = my.ConsoleState.IsAtBol;
+            var originalLastTaskId = my.ConsoleState.LastTaskId;
 
             var activityId = Random.Next();
             var sourceId   = Random.Next();
@@ -576,6 +666,10 @@ namespace PSConcurrent
                 .Verifiable();
 
             my.TaskHostUI.WriteProgress(sourceId, record);
+
+            my.ConsoleState.IsAtBol   .Should().Be(originalIsAtBol);
+            my.ConsoleState.LastTaskId.Should().Be(originalLastTaskId);
+        }
         }
 
         private class TestHarness : TestHarnessBase
