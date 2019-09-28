@@ -32,6 +32,68 @@ namespace PSConcurrent
     public class InvokeConcurrentCmdletTests
     {
         [Test]
+        public void NullScriptBlockArgument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent $null
+            ");
+
+            output.Should().BeEmpty();
+
+            e.Should().NotBeNull()
+                .And.BeAssignableTo<ParameterBindingException>()
+                .Which.Message.Should().StartWith(
+                    "Cannot validate argument on parameter 'ScriptBlock'. The argument is null."
+                );
+        }
+
+        [Test]
+        public void NullScriptBlockInternal()
+        {
+            // PowerShell should never do this, but let's be robust.
+
+            new InvokeConcurrentCmdlet { ScriptBlock = null! }
+                .InvokeProcessRecordFromTest();
+        }
+
+        [Test]
+        public void EmptyScriptBlockArgument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @()
+            ");
+
+            output.Should().BeEmpty();
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ScriptBlockArgumentWithNullElement()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @($null)
+            ");
+
+            output.Should().BeEmpty();
+
+            e.Should().NotBeNull()
+                .And.BeAssignableTo<ParameterBindingException>()
+                .Which.Message.Should().StartWith(
+                    "Cannot validate argument on parameter 'ScriptBlock'. The argument has a null value, or an element of the argument collection contains a null value."
+                );
+        }
+
+        [Test]
+        public void ScriptBlockInternalWithNullElement()
+        {
+            // PowerShell should never do this, but let's be robust.
+
+            new InvokeConcurrentCmdlet { ScriptBlock = new ScriptBlock[] { null! } }
+                .InvokeProcessRecordFromTest();
+        }
+
+        [Test]
         public void One_ArgumentBlock()
         {
             var (output, e) = Invoke(@"
@@ -217,6 +279,42 @@ namespace PSConcurrent
 
             output.Should().HaveCount(1);
             output.OfTask(1).Should().Equal(null as object);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void NullVariableArgument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @() -Variable $null
+            ");
+
+            output.Should().BeEmpty();
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void EmptyVariableArgument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @() -Variable @()
+            ");
+
+            output.Should().BeEmpty();
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void VariableArgumentWithNullElement()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @() -Variable @($null)
+            ");
+
+            output.Should().BeEmpty();
 
             e.Should().BeNull();
         }
@@ -451,6 +549,42 @@ namespace PSConcurrent
             ");
 
             output.Should().HaveCount(0);
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void NullModuleArgument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @() -Module $null
+            ");
+
+            output.Should().BeEmpty();
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void EmptyModuleArgument()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @() -Module @()
+            ");
+
+            output.Should().BeEmpty();
+
+            e.Should().BeNull();
+        }
+
+        [Test]
+        public void ModuleArgumentWithNullElement()
+        {
+            var (output, e) = Invoke(@"
+                Invoke-Concurrent @() -Module @($null)
+            ");
+
+            output.Should().BeEmpty();
 
             e.Should().BeNull();
         }

@@ -61,7 +61,7 @@ namespace PSConcurrent
         )]
         [ValidateNotNull]
         [AllowEmptyCollection]
-        public ScriptBlock?[]? ScriptBlock { get; set; }
+        public ScriptBlock[] ScriptBlock { get; set; } = new ScriptBlock[0];
 
         [Parameter()]
         [ValidateRange(1, int.MaxValue)]
@@ -106,6 +106,12 @@ namespace PSConcurrent
             _taskFactory = new TaskFactory(
                 _cancellation.Token, Creation, Continuation, scheduler
             );
+        }
+
+        // For testing only
+        internal void InvokeProcessRecordFromTest()
+        {
+            ProcessRecord();
         }
 
         protected override void ProcessRecord()
