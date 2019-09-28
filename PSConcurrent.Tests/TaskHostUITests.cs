@@ -17,6 +17,7 @@
 using System;
 using System.Management.Automation;
 using System.Management.Automation.Host;
+using System.Net;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -670,6 +671,41 @@ namespace PSConcurrent
             my.ConsoleState.IsAtBol   .Should().Be(originalIsAtBol);
             my.ConsoleState.LastTaskId.Should().Be(originalLastTaskId);
         }
+
+        [Test]
+        public void ReadLine()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            var result = "result";
+
+            my.MockUI
+                .Setup(u => u.ReadLine())
+                .Returns(result)
+                .Verifiable();
+
+            my.TaskHostUI.ReadLine().Should().BeSameAs(result);
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
+        }
+
+        [Test]
+        public void ReadLineAsSecureString()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            var result = new NetworkCredential("unused", "result").SecurePassword;
+
+            my.MockUI
+                .Setup(u => u.ReadLineAsSecureString())
+                .Returns(result)
+                .Verifiable();
+
+            my.TaskHostUI.ReadLineAsSecureString().Should().BeSameAs(result);
+
+            my.ConsoleState.IsAtBol   .Should().BeTrue();
+            my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
         }
 
         private class TestHarness : TestHarnessBase
