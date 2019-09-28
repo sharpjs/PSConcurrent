@@ -14,7 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-using System;
 using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
