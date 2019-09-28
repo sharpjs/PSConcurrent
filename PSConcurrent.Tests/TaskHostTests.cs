@@ -30,18 +30,17 @@ namespace PSConcurrent
         [Test]
         public void InstanceId_Get()
         {
-            using var my = new TestHarness();
+            using var my0 = new TestHarness();
+            using var my1 = new TestHarness();
 
-            var other = new TaskHost(my.MockHost.Object, new ConsoleState(), 123);
-
-            my.TaskHost.InstanceId.Should().NotBeEmpty().And.NotBe(other.InstanceId);
-            other      .InstanceId.Should().NotBeEmpty();
+            my0.TaskHost.InstanceId.Should().NotBeEmpty();
+            my1.TaskHost.InstanceId.Should().NotBeEmpty().And.NotBe(my0.TaskHost.InstanceId);
         }
 
         [Test]
         public void Name_Get()
         {
-            using var my = new TestHarness();
+            using var my = new TestHarness(taskId: 42);
 
             my.TaskHost.Name.Should().Be("Invoke-Concurrent[42]");
         }
@@ -61,7 +60,7 @@ namespace PSConcurrent
         {
             using var my = new TestHarness();
 
-            my.TaskHost.UI.Should().NotBeNull().And.BeAssignableTo<TaskHostUI>();
+            my.TaskHost.UI.Should().BeOfType<TaskHostUI>();
         }
 
         [Test]
@@ -197,13 +196,11 @@ namespace PSConcurrent
         private class TestHarness : TestHarnessBase
         {
             public TaskHost                  TaskHost { get; }
-            public int                       TaskId   { get; }
             public Mock<PSHost>              MockHost { get; }
             public Mock<PSHostUserInterface> MockUI   { get; }
 
             public TestHarness(int taskId = 42)
             {
-                TaskId   = taskId;
                 MockHost = Mocks.Create<PSHost>();
                 MockUI   = Mocks.Create<PSHostUserInterface>(MockBehavior.Loose);
 
@@ -211,7 +208,7 @@ namespace PSConcurrent
                     .SetupGet(h => h.UI)
                     .Returns(MockUI.Object);
 
-                TaskHost = new TaskHost(MockHost.Object, new ConsoleState(), TaskId);
+                TaskHost = new TaskHost(MockHost.Object, new ConsoleState(), taskId);
             }
         }
     }
