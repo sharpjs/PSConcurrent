@@ -29,7 +29,7 @@ namespace PSConcurrent
     /// <remarks>
     ///   This type is a slimmed-down <c>SynchronizationContext</c>.
     /// </remarks>
-    internal class MainThreadDispatcher
+    internal class MainThreadDispatcher // TODO: IDisposable
     {
         // Queue of actions waiting to be executed on the main thread
         private readonly BlockingCollection<Thunk>
