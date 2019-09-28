@@ -14,6 +14,7 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+using System;
 using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
@@ -21,173 +22,198 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-#nullable disable
-
 namespace PSConcurrent
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class TaskHostTests
     {
-        private Mock<PSHost>              MockHost;
-        private Mock<PSHostUserInterface> MockUI;
-        private TaskHost                  TaskHost;
-
-        [SetUp]
-        public void SetUp()
-        {
-            MockHost = new Mock<PSHost>              (MockBehavior.Strict);
-            MockUI   = new Mock<PSHostUserInterface> (MockBehavior.Loose);
-
-            MockHost
-                .SetupGet(h => h.UI)
-                .Returns(MockUI.Object);
-
-            TaskHost = new TaskHost(MockHost.Object, new ConsoleState(), 42);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            MockHost.Verify();
-        }
-
         [Test]
         public void InstanceId_Get()
         {
-            var other = new TaskHost(MockHost.Object, new ConsoleState(), 123);
+            using var my = new TestHarness();
 
-            TaskHost.InstanceId.Should().NotBeEmpty().And.NotBe(other.InstanceId);
-            other   .InstanceId.Should().NotBeEmpty();
+            var other = new TaskHost(my.MockHost.Object, new ConsoleState(), 123);
+
+            my.TaskHost.InstanceId.Should().NotBeEmpty().And.NotBe(other.InstanceId);
+            other      .InstanceId.Should().NotBeEmpty();
         }
 
         [Test]
         public void Name_Get()
         {
-            TaskHost.Name.Should().Be("Invoke-Concurrent[42]");
+            using var my = new TestHarness();
+
+            my.TaskHost.Name.Should().Be("Invoke-Concurrent[42]");
         }
 
         [Test]
         public void Version_Get()
         {
-           var version = typeof(TaskHost).Assembly.GetName().Version;
+            using var my = new TestHarness();
 
-           TaskHost.Version.Should().Be(version);
+            var version = typeof(TaskHost).Assembly.GetName().Version;
+
+            my.TaskHost.Version.Should().Be(version);
         }
 
         [Test]
         public void UI_Get()
         {
-            TaskHost.UI.Should().NotBeNull().And.BeAssignableTo<TaskHostUI>();
+            using var my = new TestHarness();
+
+            my.TaskHost.UI.Should().NotBeNull().And.BeAssignableTo<TaskHostUI>();
         }
 
         [Test]
         public void CurrentCulture_Get()
         {
+            using var my = new TestHarness();
+
             var culture = CultureInfo.GetCultureInfo("fr-CA");
 
-            MockHost
+            my.MockHost
                 .SetupGet(h => h.CurrentCulture)
                 .Returns(culture)
                 .Verifiable();
 
-            TaskHost.CurrentCulture.Should().BeSameAs(culture);
+            my.TaskHost.CurrentCulture.Should().BeSameAs(culture);
         }
 
         [Test]
         public void CurrentUICulture_Get()
         {
+            using var my = new TestHarness();
+
             var culture = CultureInfo.GetCultureInfo("fr-CA");
 
-            MockHost
+            my.MockHost
                 .SetupGet(h => h.CurrentUICulture)
                 .Returns(culture)
                 .Verifiable();
 
-            TaskHost.CurrentUICulture.Should().BeSameAs(culture);
+            my.TaskHost.CurrentUICulture.Should().BeSameAs(culture);
         }
 
         [Test]
         public void PrivateData_Get()
         {
+            using var my = new TestHarness();
+
             var data = new PSObject();
 
-            MockHost
+            my.MockHost
                 .SetupGet(h => h.PrivateData)
                 .Returns(data)
                 .Verifiable();
 
-            TaskHost.PrivateData.Should().BeSameAs(data);
+            my.TaskHost.PrivateData.Should().BeSameAs(data);
         }
 
         [Test]
         public void DebuggerEnabled_Get()
         {
-            MockHost
+            using var my = new TestHarness();
+
+            my.MockHost
                 .SetupGet(h => h.DebuggerEnabled)
                 .Returns(true)
                 .Verifiable();
 
-            TaskHost.DebuggerEnabled.Should().BeTrue();
+            my.TaskHost.DebuggerEnabled.Should().BeTrue();
         }
 
         [Test]
         public void DebuggerEnabled_Set()
         {
-            MockHost
+            using var my = new TestHarness();
+
+            my.MockHost
                 .SetupSet(h => h.DebuggerEnabled = true)
                 .Verifiable();
 
-            TaskHost.DebuggerEnabled = true;
+            my.TaskHost.DebuggerEnabled = true;
         }
 
         [Test]
         public void EnterNestedPrompt()
         {
-            MockHost
+            using var my = new TestHarness();
+
+            my.MockHost
                 .Setup(h => h.EnterNestedPrompt())
                 .Verifiable();
 
-            TaskHost.EnterNestedPrompt();
+            my.TaskHost.EnterNestedPrompt();
         }
 
         [Test]
         public void ExitNestedPrompt()
         {
-            MockHost
+            using var my = new TestHarness();
+
+            my.MockHost
                 .Setup(h => h.ExitNestedPrompt())
                 .Verifiable();
 
-            TaskHost.ExitNestedPrompt();
+            my.TaskHost.ExitNestedPrompt();
         }
 
         [Test]
         public void NotifyBeginApplication()
         {
-            MockHost
+            using var my = new TestHarness();
+
+            my.MockHost
                 .Setup(h => h.NotifyBeginApplication())
                 .Verifiable();
 
-            TaskHost.NotifyBeginApplication();
+            my.TaskHost.NotifyBeginApplication();
         }
 
         [Test]
         public void NotifyEndApplication()
         {
-            MockHost
+            using var my = new TestHarness();
+
+            my.MockHost
                 .Setup(h => h.NotifyEndApplication())
                 .Verifiable();
 
-            TaskHost.NotifyEndApplication();
+            my.TaskHost.NotifyEndApplication();
         }
 
         [Test]
         public void SetShouldExit()
         {
-            MockHost
+            using var my = new TestHarness();
+
+            my.MockHost
                 .Setup(h => h.SetShouldExit(42))
                 .Verifiable();
 
-            TaskHost.SetShouldExit(42);
+            my.TaskHost.SetShouldExit(42);
+        }
+
+        private class TestHarness : TestHarnessBase
+        {
+            public TaskHost                  TaskHost { get; }
+            public int                       TaskId   { get; }
+            public Mock<PSHost>              MockHost { get; }
+            public Mock<PSHostUserInterface> MockUI   { get; }
+
+            public TestHarness(int taskId = 42)
+            {
+                TaskId   = taskId;
+                MockHost = Mocks.Create<PSHost>();
+                MockUI   = Mocks.Create<PSHostUserInterface>(MockBehavior.Loose);
+
+                MockHost
+                    .SetupGet(h => h.UI)
+                    .Returns(MockUI.Object);
+
+                TaskHost = new TaskHost(MockHost.Object, new ConsoleState(), TaskId);
+            }
         }
     }
 }
