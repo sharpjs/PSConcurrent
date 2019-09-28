@@ -29,6 +29,7 @@ namespace PSConcurrent
         private readonly ConsoleState        _console;  // Overall console state
         private readonly int                 _taskId;   // Identifier of this task
         private          bool                _taskBol;  // Whether this task should be at BOL
+        private          string              _header;   // Header to print when at BOL
 
         internal TaskHostUI(PSHostUserInterface ui, ConsoleState console, int taskId)
         {
@@ -36,11 +37,14 @@ namespace PSConcurrent
             _console = console ?? throw new ArgumentNullException(nameof(console));
             _taskId  = taskId;
             _taskBol = true;
-
-            Header = $"Task {taskId}";
+            _header  = $"Task {taskId}";
         }
 
-        public string Header { get; set; }
+        public string Header
+        {
+            get => _header;
+            set => _header = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         public override PSHostRawUserInterface RawUI
             => _ui.RawUI;
