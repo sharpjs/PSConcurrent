@@ -15,6 +15,8 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Net;
@@ -706,6 +708,125 @@ namespace PSConcurrent
 
             my.ConsoleState.IsAtBol   .Should().BeTrue();
             my.ConsoleState.LastTaskId.Should().Be(my.TaskId);
+        }
+
+        [Test]
+        public void Prompt()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            var originalIsAtBol    = my.ConsoleState.IsAtBol;
+            var originalLastTaskId = my.ConsoleState.LastTaskId;
+
+            var caption  = "Test Prompt";
+            var message  = "This is a test prompt.";
+            var fields   = new Collection<FieldDescription>();
+            var expected = new Dictionary<string, PSObject>();
+
+            my.MockUI
+                .Setup(u => u.Prompt(caption, message, fields))
+                .Returns(expected)
+                .Verifiable();
+
+            var result = my.TaskHostUI.Prompt(caption, message, fields);
+
+            result.Should().BeSameAs(expected);
+
+            my.ConsoleState.IsAtBol   .Should().Be(originalIsAtBol);
+            my.ConsoleState.LastTaskId.Should().Be(originalLastTaskId);
+        }
+
+        [Test]
+        public void PromptForChoice()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            var originalIsAtBol    = my.ConsoleState.IsAtBol;
+            var originalLastTaskId = my.ConsoleState.LastTaskId;
+
+            var caption  = "Test Prompt";
+            var message  = "This is a test prompt.";
+            var choices  = new Collection<ChoiceDescription>();
+            var @default = Random.Next();
+            var expected = Random.Next();
+
+            my.MockUI
+                .Setup(u => u.PromptForChoice(caption, message, choices, @default))
+                .Returns(expected)
+                .Verifiable();
+
+            var result = my.TaskHostUI.PromptForChoice(caption, message, choices, @default);
+
+            result.Should().Be(expected);
+
+            my.ConsoleState.IsAtBol   .Should().Be(originalIsAtBol);
+            my.ConsoleState.LastTaskId.Should().Be(originalLastTaskId);
+        }
+
+        [Test]
+        public void PromptForCredential()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            var originalIsAtBol    = my.ConsoleState.IsAtBol;
+            var originalLastTaskId = my.ConsoleState.LastTaskId;
+
+            var caption    = "Test Prompt";
+            var message    = "This is a test prompt.";
+            var userName   = "test";
+            var targetName = "test.example.net";
+            var expected   = new PSCredential(
+                userName: "test", 
+                password: new NetworkCredential("", "password").SecurePassword
+            );
+
+            my.MockUI
+                .Setup(u => u.PromptForCredential(caption, message, userName, targetName))
+                .Returns(expected)
+                .Verifiable();
+
+            var result = my.TaskHostUI.PromptForCredential(caption, message, userName, targetName);
+
+            result.Should().Be(expected);
+
+            my.ConsoleState.IsAtBol   .Should().Be(originalIsAtBol);
+            my.ConsoleState.LastTaskId.Should().Be(originalLastTaskId);
+        }
+
+        [Test]
+        public void PromptForCredential_WithTypesOptions()
+        {
+            using var my = new TestHarness(taskId: 1);
+
+            var originalIsAtBol    = my.ConsoleState.IsAtBol;
+            var originalLastTaskId = my.ConsoleState.LastTaskId;
+
+            var caption    = "Test Prompt";
+            var message    = "This is a test prompt.";
+            var userName   = "test";
+            var targetName = "test.example.net";
+            var types      = Random.NextEnum<PSCredentialTypes>();
+            var options    = Random.NextEnum<PSCredentialUIOptions>();
+            var expected   = new PSCredential(
+                userName: "test", 
+                password: new NetworkCredential("", "password").SecurePassword
+            );
+
+            my.MockUI
+                .Setup(u => u.PromptForCredential(
+                    caption, message, userName, targetName, types, options
+                ))
+                .Returns(expected)
+                .Verifiable();
+
+            var result = my.TaskHostUI.PromptForCredential(
+                caption, message, userName, targetName, types, options
+            );
+
+            result.Should().Be(expected);
+
+            my.ConsoleState.IsAtBol   .Should().Be(originalIsAtBol);
+            my.ConsoleState.LastTaskId.Should().Be(originalLastTaskId);
         }
 
         private class TestHarness : TestHarnessBase
