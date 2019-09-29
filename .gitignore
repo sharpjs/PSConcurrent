@@ -1,20 +1,13 @@
 # Visual Studio User Files
 .vs/
-*.suo
 *.user
-*.cache
 
 # Build Products
 obj/
 bin/
 /Local.props
 
-# NuGet
-/packages/
-
 # Testing
-TestResults
-TestResult*.xml
 /coverage/
 
 # Temporary Files
