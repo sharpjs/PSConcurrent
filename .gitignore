@@ -5,10 +5,9 @@
 # Build Products
 obj/
 bin/
-/Local.props
-
-# Testing
 /coverage/
+/dist/
+/Local.props
 
 # Temporary Files
 *.log
