@@ -6,29 +6,44 @@ Available in the [PowerShell Gallery](https://www.powershellgallery.com/packages
 
 ## Status
 
-**Stable.**
+**PSConcurrent 1.x** has been used in production for several years.  There have
+been no bug reports.
+
+**PSConcurrent 2.x** is new but does not make significant cmdlet changes.
+Rather, the update adds PowerShell Core support and 100% test coverage.
+
+While the author strives to create bug-free software, PSConcurrent is provided
+**as is** and without warranty of any kind.  For details, see the
+[license and disclaimers](https://github.com/sharpjs/PSConcurrent/blob/master/LICENSE.txt).
+
+## Requirements
+
+PSConcurrent works with both PowerShell Core and traditional Windows PowerShell,
+now known as PowerShell Desktop Edition.
+
+For **PowerShell Core**:
+* PowerShell Core 6.0 or later.
+
+For **PowerShell Desktop**:
+* PowerShell 5.1 or later.
+* .NET Framework 4.6.1 or later.
+* [PowerShellGet](https://docs.microsoft.com/en-us/powershell/scripting/gallery/installing-psget?view=powershell-5.1)
 
 ## Installation
 
-* Ensure that you have PowerShell 5.0 or later
-* Ensure that you have the latest version of the
-  [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/psget/get_psget_module)
-  module.
-  ```powershell
-  Install-PackageProvider Nuget –Force
-  Install-Module –Name PowerShellGet –Force
-  Set-PSRepository PSGallery -InstallationPolicy Trusted # optional
-  ```
-* Run this command:
-  ```powershell
-  Install-Module -Name PSConcurrent
-  ```
-* Restart PowerShell.
+To install PSConcurrent, run this command:
+```powershell
+Install-Module -Name PSConcurrent
+```
+Then restart PowerShell.
+
+## Updating
 
 To update PSConcurrent, run this command:
 ```powershell
 Update-Module -Name PSConcurrent
 ```
+Then restart PowerShell.
 
 ## Usage
 
