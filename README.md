@@ -144,11 +144,11 @@ $B = "pocus"
 Import-Module PSMagic
 
 $Tasks = `
-    [PSCustomObject] {
+    [PSCustomObject] @{
         ScriptBlock = { Write-Host "$A $B" }    # arrays allowed
         Variable    = Get-Variable A, B         # arrays allowed
     },
-    [PSCustomObject] {
+    [PSCustomObject] @{
         ScriptBlock = { Use-MagicWand }         # arrays allowed
         Module      = Get-Module PSMagic        # arrays allowed
     }
